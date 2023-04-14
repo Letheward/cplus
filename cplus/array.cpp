@@ -1,0 +1,147 @@
+/* ==== Macros ==== */
+
+#define count_of(array)      (sizeof(array) / sizeof(array[0]))
+#define array(T, c_array)    Array<T> {c_array, count_of(c_array)}
+
+
+
+
+/* ==== Array ==== */
+
+template<typename T>
+struct Array {
+
+    T*  data;
+    u64 count;
+
+    inline T operator [] (u64 index) {
+        return data[index];
+    }
+
+    inline Array<T> view(u64 start, u64 end) {
+        return { data + start, end - start };
+    }
+
+    inline Array<T> advance(u64 pos) {
+        return { data + pos, count - pos };
+    }
+
+    inline void swap(u64 a_index, u64 b_index) {
+        auto a = data[a_index];
+        auto b = data[b_index];
+        data[a_index] = b;
+        data[b_index] = a;
+    }
+
+    T pop() {
+        if (!count) return {};
+        auto out = data[count - 1];
+        count--;
+        return out;
+    }
+    
+    inline bool remove(u64 index) {
+        if (!count) return false;
+        swap(index, count - 1);
+        count--;
+        return true;
+    }
+
+    Tuple2<u64, bool> find(T item) {
+        for (u64 i = 0; i < count; i++) {
+            if (data[i] == item) return { i, true };
+        }
+        return { 0, false };
+    }
+
+    bool remove_if_found(T item) {
+        auto [index, found] = find(item);
+        if (!found) return false;
+        remove(index);
+        return true;
+    }
+
+    static Tuple2<Array<T>, bool> alloc(u64 count, Allocator allocator = Allocators::default_heap) {
+        auto data = (T*) allocator.alloc(count * sizeof(T));
+        if (!data) return {};
+        return { { data, count }, true };
+    }
+};
+
+template<typename T>
+struct DynamicArray : Array<T> {
+
+    u64       allocated;
+    Allocator allocator;
+
+    bool init(u64 init_count = 32, Allocator init_alloc = Allocators::default_heap) {
+
+        allocator = init_alloc;
+
+        auto p = (T*) allocator.alloc(init_count * sizeof(T));
+        if (!p) return false;
+
+        this->data  = p;
+        this->count = 0;
+        allocated   = init_count;
+
+        return true;
+    }
+
+    bool init_from_array(Array<T> in, Allocator init_alloc = Allocators::default_heap) {
+    
+        allocator = init_alloc;
+        
+        auto to_alloc = round_to_next_power_of_2(in.count * sizeof(T));
+        
+        auto p = (T*) allocator.alloc(to_alloc);
+        if (!p) return false;
+
+        memcpy(p, in.data, to_alloc);
+        
+        this->data  = p;
+        this->count = in.count;
+        allocated   = to_alloc;
+
+        return true;
+    }
+
+    void deinit() {
+        allocator.free(this->data);
+        *this = {};
+    }
+
+    void reset() {
+        this->count = 0;
+    }
+
+    bool reserve(u64 reserve_count) {
+
+        if (reserve_count <= allocated) return true;
+
+        auto p = (T*) allocator.resize(this->data, reserve_count * sizeof(T));
+        if (!p) return false;
+
+        this->data = p;
+        allocated  = reserve_count;
+
+        return true;
+    }
+
+    T* add(T item) {
+
+        u64 old_count = this->count;
+        u64 wanted    = old_count + 1;
+
+        if (wanted > allocated) {
+            auto ok = reserve(allocated * 2);
+            if (!ok) return NULL;
+        }
+
+        this->data[old_count] = item;
+        this->count           = wanted;
+
+        return &this->data[old_count];
+    }
+};
+

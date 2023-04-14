@@ -1,0 +1,4 @@
+*.exe
+*.out
+test.sh
+test.cpp
