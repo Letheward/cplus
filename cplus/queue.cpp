@@ -64,6 +64,25 @@ struct Queue {
 
         return { out, true };
     }
+
+
+    /* ---- Iterators ---- */
+    
+    template<typename P>
+    inline void for_each(P p) {
+        for (u64 i = 0; i < item_count; i++) {
+            u64 index = start_index + i;
+            p(data[index % size]);
+        }
+    }
+    
+    template<typename P>
+    inline void for_each_with_index(P p) {
+        for (u64 i = 0; i < item_count; i++) {
+            u64 index = start_index + i;
+            p(data[index % size], i);
+        }
+    }
 };
 
 

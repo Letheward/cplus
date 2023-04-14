@@ -33,7 +33,7 @@ struct Array {
         data[b_index] = a;
     }
 
-    T pop() {
+    inline T pop() {
         if (!count) return {};
         auto out = data[count - 1];
         count--;
@@ -65,6 +65,61 @@ struct Array {
         auto data = (T*) allocator.alloc(count * sizeof(T));
         if (!data) return {};
         return { { data, count }, true };
+    }
+
+
+    /* ---- Iterators ---- */
+
+    /*
+        Note: 
+        I'm still not sure that I like this, but this is much readable, understandable, sane, 
+        and (ironically) much more powerful, than writing weird data holders, 
+        hardcoded begin(), end(), and a bunch of crazy operator overloads.
+
+        If you want to write the raw iteration yourself for any reason, the code here is 
+        actually the example code of how you do it.
+
+        Downside:
+        - You can't use break/continue, although you can achieve the same thing with early return, return values, etc. 
+        - This may have some performance cost due to the lambda.
+
+        Same thing for other data structures.
+    */
+   
+    template<bool reverse = false, typename P>
+    inline void for_each(P p) {
+        
+        if constexpr (!reverse) {
+            
+            for (u64 i = 0; i < count; i++) {
+                p(data[i]);
+            }
+        
+        } else {
+            
+            for (u64 i = count; i > 0;) {
+                i--;
+                p(data[i]);
+            }
+        }
+    }
+        
+    template<bool reverse = false, typename P>
+    inline void for_each_with_index(P p) {
+            
+        if constexpr (!reverse) {
+            
+            for (u64 i = 0; i < count; i++) {
+                p(data[i], i);
+            }
+
+        } else {
+            
+            for (u64 i = count; i > 0;) {
+                i--;
+                p(data[i], i);
+            }
+        }
     }
 };
 

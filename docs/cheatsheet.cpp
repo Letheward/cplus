@@ -156,14 +156,10 @@ int main() {
             
             printf("Table [%llu / %llu]\n", table.entry_count, table.size);
             
-            for (u64 i = 0; i < table.size; i++) {
-
-                auto entry = &table.entries[i];
-                if (!entry->occupied) continue;
-
-                printf("[%.4llu] [%.8x] | ", i, entry->hash);
+            table.for_entry_with_index([](auto entry, auto index) {
+                printf("[%.4llu] [%.8x] | ", index, entry->hash);
                 print(string("\"@\" -> \"@\"\n"), entry->key, entry->value);
-            }
+            });
             
             printf("\n");
         };
@@ -210,16 +206,16 @@ int main() {
         list.add(string("biz"));
 
         auto print_list = [&]() {
-            for each_node(list, node) {
-                print(string("\"@\" -> "), node->value); 
-            }
+            list.for_value([](auto value) {
+                print(string("\"@\" -> "), value); 
+            });
             printf("null\n");
         };
 
         auto print_list_reverse = [&]() {
-            for each_node_reverse(list, node) {
-                print(string("\"@\" -> "), node->value); 
-            }
+            list.for_value<true>([](auto value) {
+                print(string("\"@\" -> "), value); 
+            });
             printf("null\n");
         };
 

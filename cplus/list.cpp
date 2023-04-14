@@ -1,14 +1,3 @@
-/* ==== Macro ==== */
-
-#define each_node(        list, it)              (auto it = list.start; it; it = it->next)
-#define each_node_reverse(list, it)              (auto it = list.end;   it; it = it->prev)
-
-#define each_node_from_here(        start, it)   (auto it = start; it; it = it->next)
-#define each_node_from_here_reverse(end,   it)   (auto it = end;   it; it = it->prev)
-
-
-
-
 /* ==== List ==== */
 
 // todo: validate
@@ -225,6 +214,70 @@ struct List {
         return true;
     }
 
+
+
+
+    /* ---- Iterators ---- */
+    
+    template<bool reverse = false, typename P>
+    void for_value(P p) {
+        if constexpr (!reverse) {
+            for (auto it = start; it; it = it->next)  p(it->value);
+        } else {
+            for (auto it = end;   it; it = it->prev)  p(it->value);
+        }
+    }
+    
+    template<bool reverse = false, typename P>
+    void for_value_with_index(P p) {
+   
+        u64 index = 0;
+
+        if constexpr (!reverse) {
+            
+            for (auto it = start; it; it = it->next) {
+                p(it->value, index);
+                index++;
+            }
+        
+        } else {
+            
+            for (auto it = end; it; it = it->prev) {
+                p(it->value, index);
+                index++;
+            }
+        }
+    }
+    
+    template<bool reverse = false, typename P>
+    void for_node(P p) {
+        if constexpr (!reverse) {
+            for (auto it = start; it; it = it->next)  p(it);
+        } else {
+            for (auto it = end;   it; it = it->prev)  p(it);
+        }
+    }
+    
+    template<bool reverse = false, typename P>
+    void for_node_with_index(P p) {
+        
+        u64 index = 0;
+        
+        if constexpr (!reverse) {
+            
+            for (auto it = start; it; it = it->next) {
+                p(it, index);
+                index++;
+            }
+        
+        } else {
+            
+            for (auto it = end; it; it = it->prev) {
+                p(it);
+                index++;
+            }
+        }
+    }
 };
 
 

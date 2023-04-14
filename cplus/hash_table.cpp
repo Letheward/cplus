@@ -113,6 +113,46 @@ struct HashTable {
         return { entries[index].value, true };
     }
 
+
+
+
+    /* ---- Iterators ---- */
+
+    template<typename P>
+    inline void for_key_value(P p) {
+        for (u64 i = 0; i < size; i++) {
+            auto entry = &entries[i];
+            if (!entry->occupied) continue;
+            p(entry->key, entry->value);
+        }
+    }
+ 
+    template<typename P>
+    inline void for_entry(P p) {
+        for (u64 i = 0; i < size; i++) {
+            auto entry = &entries[i];
+            if (!entry->occupied) continue;
+            p(entry);
+        }
+    }
+
+    template<typename P>
+    inline void for_entry_with_index(P p) {
+        for (u64 i = 0; i < size; i++) {
+            auto entry = &entries[i];
+            if (!entry->occupied) continue;
+            p(entry, i);
+        }
+    }
+   
+    template<typename P>
+    inline void for_all(P p) {
+        for (u64 i = 0; i < size; i++) {
+            auto entry = &entries[i];
+            p(entry, i);
+        }
+    }
+
 private:
     
     static Tuple3<u64, bool, bool> internal_get_index_and_stats(Entry* entries, u64 size, K key, u32 hash) {
@@ -128,7 +168,7 @@ private:
             index = (index + probe_count) & (size - 1);
             probe_count++;
 
-            if (probe_count >= size) return { 0, false, false };
+            if (probe_count >= size) return {};
         }
 
         return { index, false, true };
