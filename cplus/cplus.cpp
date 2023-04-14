@@ -5,7 +5,7 @@
 #include <assert.h>
 
 
-#ifdef    CPLUS_NAMESPACE
+#ifdef CPLUS_NAMESPACE
 namespace CPLUS_NAMESPACE {
 #endif
 
@@ -21,6 +21,7 @@ namespace CPLUS_NAMESPACE {
 #include "sort.cpp"
 
 #include "string.cpp"
+#include "parse.cpp"
 #include "unicode.cpp"
 #include "io.cpp"
 

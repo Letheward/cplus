@@ -25,6 +25,29 @@ constexpr bool is_unsigned_integer() {
 
 
 
+/* ==== Bit Utils ==== */
+
+template<typename A, typename B>
+inline B bit_cast(A a) {
+    union { A a; B b; } out = {};
+    out.a = a;
+    return out.b;
+}
+
+template<typename T>
+inline T get_mask(T c) {
+    
+    static_assert(is_integer<T>() && sizeof(T) <= 8);
+    
+    if constexpr (sizeof(T) == 1) return (u8)  (((s8)  ((u8)  c | -(u8)  c)) >> 7);
+    if constexpr (sizeof(T) == 2) return (u16) (((s16) ((u16) c | -(u16) c)) >> 15);
+    if constexpr (sizeof(T) == 4) return (u32) (((s32) ((u32) c | -(u32) c)) >> 31);
+    if constexpr (sizeof(T) == 8) return (u64) (((s64) ((u64) c | -(u64) c)) >> 63);
+}
+
+
+
+
 /* ==== Tuples ==== */
 
 #if 0

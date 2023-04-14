@@ -10,7 +10,7 @@ An overview of files:
 cplus.cpp         includes all the things 
 
 core.cpp          basic type definitions  
-utils.cpp         defer, tuple, compile time utils
+utils.cpp         defer, tuple, bit utils, compile time type utils
 math.cpp          basic math utils
 allocator.cpp     allocator interface and a simple arena allocator
 
@@ -20,6 +20,7 @@ list.cpp          doubly linked list with a fixed size pool
 sort.cpp          basic sorting algorithms
 
 string.cpp        string view, string builder, inplace string
+parse.cpp         basic string parsing utils
 unicode.cpp       unicode decode/encode/convert
 io.cpp            console IO and load/save file
 
