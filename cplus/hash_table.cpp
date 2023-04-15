@@ -1,6 +1,6 @@
 /* ==== Hash Table ==== */
 
-template<typename K, typename V, u32 hash_function(K) = get_hash_fnv1a, u64 load_factor = 70>
+template<typename K, typename V, u32 hash_function(K) = HashFunctions::fnv1a, u64 load_factor = 70>
 struct HashTable {
 
     struct Entry {

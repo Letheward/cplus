@@ -220,7 +220,7 @@ struct List {
     /* ---- Iterators ---- */
     
     template<bool reverse = false, typename P>
-    void for_value(P p) {
+    inline void for_value(P p) {
         if constexpr (!reverse) {
             for (auto it = start; it; it = it->next)  p(it->value);
         } else {
@@ -229,7 +229,7 @@ struct List {
     }
     
     template<bool reverse = false, typename P>
-    void for_value_with_index(P p) {
+    inline void for_value_with_index(P p) {
    
         u64 index = 0;
 
@@ -250,7 +250,7 @@ struct List {
     }
     
     template<bool reverse = false, typename P>
-    void for_node(P p) {
+    inline void for_node(P p) {
         if constexpr (!reverse) {
             for (auto it = start; it; it = it->next)  p(it);
         } else {
@@ -259,7 +259,7 @@ struct List {
     }
     
     template<bool reverse = false, typename P>
-    void for_node_with_index(P p) {
+    inline void for_node_with_index(P p) {
         
         u64 index = 0;
         
