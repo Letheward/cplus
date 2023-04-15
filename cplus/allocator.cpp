@@ -30,6 +30,12 @@ struct Allocator {
 };
 
 
+
+
+/* ==== Memory Arena ==== */
+
+#define memory_arena(data)   MemoryArena { data, count_of(data), 0, 0 }    
+
 struct MemoryArena {
     
     u8* data;
@@ -153,5 +159,7 @@ namespace Allocators {
 
     constexpr Allocator default_heap = { default_heap_allocator_procedure, NULL };
 
+
 };
+
 
