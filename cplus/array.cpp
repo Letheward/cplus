@@ -33,39 +33,47 @@ struct Array {
         data[b_index] = a;
     }
 
-    inline T pop() {
+    T pop() {
         if (!count) return {};
         auto out = data[count - 1];
         count--;
         return out;
     }
     
-    inline bool remove(u64 index) {
-        if (!count) return false;
-        swap(index, count - 1);
-        count--;
-        return true;
-    }
-
     Tuple2<u64, bool> find(T item) {
         for (u64 i = 0; i < count; i++) {
             if (data[i] == item) return { i, true };
         }
         return { 0, false };
     }
-
-    bool remove_if_found(T item) {
-        auto [index, found] = find(item);
-        if (!found) return false;
-        remove(index);
+    
+    // note: unordered
+    bool remove(u64 index) {
+        if (!count) return false;
+        swap(index, count - 1);
+        count--;
         return true;
     }
+   
+    // note: unordered
+    template<typename P>
+    void remove_all_matches(P p) {
+        for (u64 i = 0; i < count; i++) {
+            auto it = &data[i];
+            while (i < count && p(it)) {
+                remove(i);
+                it = &data[i];
+            }
+        }
+    }
+
 
     static Tuple2<Array<T>, bool> alloc(u64 count, Allocator allocator = Allocators::default_heap) {
         auto data = (T*) allocator.alloc(count * sizeof(T));
         if (!data) return {};
         return { { data, count }, true };
     }
+
 
 
     /* ---- Iterators ---- */

@@ -11,15 +11,28 @@ struct List {
         Node* next;
         T     value;
 
-        void link(Node* node) {
+        inline void link(Node* node) {
             if (!node) return;
             next       = node;
             node->prev = this;
         }
 
-        void detach() {
+        inline void unlink() {
             prev = NULL;
             next = NULL;
+        }
+        
+        inline void detach() {
+            
+            if (prev) {
+                prev->next = NULL;
+                prev = NULL;
+            }
+            
+            if (next) {
+                next->prev = NULL;
+                next = NULL;
+            }
         }
     };
 
@@ -106,7 +119,7 @@ struct List {
         if (end) end->next = NULL;
         else     start     = NULL;
         
-        out->detach();
+        out->unlink();
 
         return out;
     }
@@ -121,7 +134,7 @@ struct List {
         if (start) start->prev = NULL;
         else       end         = NULL;
 
-        out->detach();
+        out->unlink();
 
         return out;
     }
@@ -202,16 +215,25 @@ struct List {
             if (node == start) start = next;
         }
 
-        node->detach();
+        node->unlink();
 
         return true;
     }
+    
+    
+    template<typename P>
+    void remove_all_matches(P p) {
+    
+        for (auto it = start; it; it = it->next) {
+            
+            while (it && p(it->value)) {
+                auto next = it->next;
+                remove(it);
+                it = next;
+            }
 
-    bool remove_if_found(T value) {
-        auto node = find(value);
-        if (!node) return false;
-        remove(node);
-        return true;
+            if (!it) break;
+        }
     }
 
 
