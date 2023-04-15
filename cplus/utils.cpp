@@ -39,7 +39,7 @@ inline B bit_cast(A a) {
 template<typename T>
 inline T get_mask(T c) {
     
-    static_assert(type_is_integer<T>() && sizeof(T) <= 8);
+    static_assert(type_is_integer<T>());
     
     if constexpr (sizeof(T) == 1) return (u8)  (((s8)  ((u8)  c | -(u8)  c)) >> 7);
     if constexpr (sizeof(T) == 2) return (u16) (((s16) ((u16) c | -(u16) c)) >> 15);
