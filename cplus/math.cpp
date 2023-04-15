@@ -41,7 +41,7 @@ T clamp(T x, T low, T high) {
 
 template<typename T, typename F>
 T lerp(T a, T b, F t) {
-    static_assert(is_float<F>());
+    static_assert(type_is_float<F>());
     return a + (b - a) * t;
 }
 
@@ -53,7 +53,7 @@ T mod(T x, T m) {
 template<typename T>
 T gcd(T a, T b) {
 
-    static_assert(is_unsigned_integer<T>());
+    static_assert(type_is_unsigned_integer<T>());
     
     while (b) {
         T t = b;
@@ -71,7 +71,7 @@ T lcm(T a, T b) {
 
 template<typename T>
 Tuple2<T, T> div_mod(T a, T b) {
-    static_assert(is_unsigned_integer<T>());
+    static_assert(type_is_unsigned_integer<T>());
     return { a / b, a % b };
 }
 
@@ -90,20 +90,20 @@ T rounded_div(T a, T b) {
 
 template<typename T>
 bool is_power_of_2(T x) {
-    static_assert(is_unsigned_integer<T>());
+    static_assert(type_is_unsigned_integer<T>());
     return (x & (x - 1)) == 0;
 }
 
 template<typename T>
 bool is_power_of_2_minus_1(T x) {
-    static_assert(is_unsigned_integer<T>());
+    static_assert(type_is_unsigned_integer<T>());
     return (x & (x + 1)) == 0;
 }
 
 template<typename T>
 T round_to_prev_power_of_2(T x) {
     
-    static_assert(is_unsigned_integer<T>());
+    static_assert(type_is_unsigned_integer<T>());
     
     x |= (x >> 1);
     x |= (x >> 2);
@@ -118,7 +118,7 @@ T round_to_prev_power_of_2(T x) {
 template<typename T>
 T round_to_next_power_of_2(T x) {
 
-    static_assert(is_unsigned_integer<T>());
+    static_assert(type_is_unsigned_integer<T>());
     
     x = x - 1;
     

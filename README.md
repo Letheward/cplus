@@ -7,25 +7,26 @@ A tiny standard library for C++.
 An overview of files:
 
 ~~~
-cplus.cpp         includes all the things 
+cplus.cpp           includes all the things 
+code_generator.cpp  code generation utils, not included by default
 
-core.cpp          basic type definitions  
-utils.cpp         defer, tuple, bit utils, compile time type utils
-math.cpp          basic math utils
-allocator.cpp     allocator interface and a simple arena allocator
+core.cpp            basic type definitions  
+utils.cpp           defer, tuple, bit utils, compile time type utils
+math.cpp            basic math utils
+allocator.cpp       allocator interface and a simple arena allocator
 
-array.cpp         array view and dynamic array
-queue.cpp         fixed size queue
-list.cpp          doubly linked list with a fixed size pool
-sort.cpp          basic sorting algorithms
+array.cpp           array view and dynamic array
+queue.cpp           fixed size queue
+list.cpp            doubly linked list with a fixed size pool
+sort.cpp            basic sorting algorithms
 
-string.cpp        string view, string builder, inplace string
-parse.cpp         basic string parsing utils
-unicode.cpp       unicode decode/encode/convert
-io.cpp            console IO and load/save file
+string.cpp          string view, string builder, inplace string
+parse.cpp           basic string parsing utils
+unicode.cpp         unicode decode/encode/convert
+io.cpp              console IO and load/save file
 
-hash.cpp          basic hash functions
-hash_table.cpp    simple hash table
+hash.cpp            basic hash functions
+hash_table.cpp      simple hash table
 ~~~
 
 ## Simple Example

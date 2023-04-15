@@ -1,25 +1,27 @@
 /* ==== Type Utils ==== */
 
-// todo: validate
+template<typename T> constexpr bool type_is_unsigned_integer() { return false; };
+template<> constexpr bool type_is_unsigned_integer<u8>() { return true; };
+template<> constexpr bool type_is_unsigned_integer<u16>() { return true; };
+template<> constexpr bool type_is_unsigned_integer<u32>() { return true; };
+template<> constexpr bool type_is_unsigned_integer<u64>() { return true; };
 
-template<typename T>
-constexpr bool is_float() {
-    return ((T) 0.01) != 0;
+template<typename T> constexpr bool type_is_signed_integer() { return false; };
+template<> constexpr bool type_is_signed_integer<s8>() { return true; };
+template<> constexpr bool type_is_signed_integer<s16>() { return true; };
+template<> constexpr bool type_is_signed_integer<s32>() { return true; };
+template<> constexpr bool type_is_signed_integer<s64>() { return true; };
+
+template<typename T> constexpr bool type_is_float() { return false; };
+template<> constexpr bool type_is_float<f32>() { return true; };
+template<> constexpr bool type_is_float<f64>() { return true; };
+
+template<typename T> constexpr bool type_is_integer() {
+    return type_is_unsigned_integer<T>() || type_is_signed_integer<T>();
 }
 
-template<typename T>
-constexpr bool is_integer() {
-    return !is_float<T>();
-}
-
-template<typename T>
-constexpr bool is_signed_integer() {
-    return ((T) -1) < 0 && is_integer<T>();
-}
-
-template<typename T>
-constexpr bool is_unsigned_integer() {
-    return ((T) -1) > 0;
+template<typename T> constexpr bool type_is_basic_value() {
+    return type_is_integer<T>() || type_is_float<T>();
 }
 
 
@@ -37,7 +39,7 @@ inline B bit_cast(A a) {
 template<typename T>
 inline T get_mask(T c) {
     
-    static_assert(is_integer<T>() && sizeof(T) <= 8);
+    static_assert(type_is_integer<T>() && sizeof(T) <= 8);
     
     if constexpr (sizeof(T) == 1) return (u8)  (((s8)  ((u8)  c | -(u8)  c)) >> 7);
     if constexpr (sizeof(T) == 2) return (u16) (((s16) ((u16) c | -(u16) c)) >> 15);
@@ -49,26 +51,6 @@ inline T get_mask(T c) {
 
 
 /* ==== Tuples ==== */
-
-#if 0
-
-void generate_tuple_code(u64 count = 6) {
-
-    for (u64 i = 2; i <= count; i++) {
-        printf("template<");
-        for (u64 j = 0; j < i - 1; j++) {
-            printf("typename T%llu, ", j);
-        }
-        printf("typename T%llu>\n", i - 1);
-        printf("struct Tuple%llu { ", i);
-        for (u64 j = 0; j < i; j++) {
-            printf("T%llu v%llu; ", j, j);
-        }
-        printf("};\n\n");
-    }
-}
-
-#endif
 
 template<typename T0, typename T1>
 struct Tuple2 { T0 v0; T1 v1; };
