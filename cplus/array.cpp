@@ -54,15 +54,32 @@ struct Array {
         count--;
         return true;
     }
-   
-    // note: unordered
-    template<typename P>
+    
+    bool remove_ordered(u64 index) {
+        if (!count) return false;
+        for (u64 i = index; i < count - 1; i++) {
+            swap(i, i + 1);
+        }
+        count--;
+        return true;
+    }
+
+
+    template<bool ordered = false, typename P>
     void remove_all_matches(P p) {
+
         for (u64 i = 0; i < count; i++) {
-            auto it = &data[i];
-            while (i < count && p(it)) {
-                remove(i);
-                it = &data[i];
+            
+            while (i < count) {
+                
+                if (p(data[i])) {
+
+                    if constexpr (ordered) remove_ordered(i); // todo: n^2
+                    else                   remove(i);
+
+                } else {
+                    break;
+                }
             }
         }
     }

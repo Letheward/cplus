@@ -226,10 +226,14 @@ struct List {
     
         for (auto it = start; it; it = it->next) {
             
-            while (it && p(it->value)) {
-                auto next = it->next;
-                remove(it);
-                it = next;
+            while (it) {
+                if (p(it->value)) {
+                    auto next = it->next;
+                    remove(it);
+                    it = next;
+                } else {
+                    break;
+                }
             }
 
             if (!it) break;
