@@ -76,7 +76,7 @@ struct HashTable {
             if (!ok) return NULL;
         }
         
-        u32 hash  = hash_function(key);
+        u32 hash = hash_function(key);
         auto [index, found, ok] = internal_get_index_and_stats(entries, size, key, hash);
         
         if (!ok) return NULL;

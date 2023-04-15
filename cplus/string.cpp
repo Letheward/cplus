@@ -509,7 +509,7 @@ struct StringBuilder : String {
         this->count = 0;
     }
 
-    bool resize(u64 new_size) {
+    bool reserve(u64 new_size) {
         
         if (new_size <= allocated) return false;
 
@@ -526,7 +526,7 @@ struct StringBuilder : String {
 
         u64 wanted = this->count + s.count;
         while (wanted > allocated) {
-            auto ok = resize(allocated * 2);
+            auto ok = reserve(allocated * 2);
             if (!ok) return 0;
         }
 
@@ -587,7 +587,7 @@ struct StringBuilder : String {
 
         u64 wanted = this->count + format_count;
         while (wanted + 1 > allocated) {
-            auto ok = resize(allocated * 2);
+            auto ok = reserve(allocated * 2);
             if (!ok) return 0;
         }
 
@@ -617,16 +617,15 @@ struct InplaceString {
     }
     
     inline String to_string() {
-        static_assert(sizeof(InplaceString<size>) == size);
         return { data, count };
     }
-
+    
     template<u64 new_size>
     inline InplaceString<new_size> resize() {
         
-        static_assert(new_size % 2 == 0 && new_size < 256);
-        static_assert(sizeof(InplaceString<new_size>) == new_size);
-        assert(new_size > size || count < new_size);
+        static_assert(check_size<new_size>());
+        
+        if constexpr (new_size < size) assert(count + 1 < new_size);
         
         auto out = *(InplaceString<new_size>*) this;
         out.count = count;
@@ -634,7 +633,18 @@ struct InplaceString {
         return out;
     }
     
-    static_assert(size >= 4 && size <= 256 && size % 2 == 0);
+private:
+    
+    template<u64 the_size>
+    constexpr bool check_size() {
+        return (
+            (the_size >= 4 && the_size <= 256) && 
+            (the_size % 2 == 0)                && 
+            (sizeof(InplaceString<the_size>) == the_size)
+        );
+    }
+    
+    static_assert(check_size<size>());
 };
 
 template<u64 size>

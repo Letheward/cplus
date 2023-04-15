@@ -87,7 +87,7 @@ struct Array {
         If you want to write the raw iteration yourself for any reason, the code here is 
         actually the example code of how you do it.
 
-        Downside:
+        Downsides:
         - You can't use break/continue, although you can achieve the same thing with early return, return values, etc. 
         - This may have some performance cost due to the lambda.
 
