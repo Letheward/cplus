@@ -17,6 +17,8 @@ struct HashTable {
 
     bool init(u64 init_size = 256, Allocator init_alloc = Allocators::default_heap) {
         
+        *this = {};
+
         allocator = init_alloc;
         init_size = round_to_next_power_of_2(init_size);
         

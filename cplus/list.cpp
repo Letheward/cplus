@@ -48,6 +48,8 @@ struct List {
  
     bool init(u64 init_size = 256) {
 
+        *this = {};
+        
         auto p = (Node*) calloc(init_size, sizeof(Node));
         if (!p) return false;
 

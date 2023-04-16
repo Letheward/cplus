@@ -156,6 +156,8 @@ struct DynamicArray : Array<T> {
 
     bool init(u64 init_count = 32, Allocator init_alloc = Allocators::default_heap) {
 
+        *this = {};
+
         allocator = init_alloc;
 
         auto p = (T*) allocator.alloc(init_count * sizeof(T));

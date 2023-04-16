@@ -593,6 +593,8 @@ struct StringBuilder : String {
 
     bool init(u64 init_count = 1024, Allocator init_alloc = Allocators::default_heap) {
 
+        *this = {};
+
         allocator = init_alloc;
 
         auto p = (u8*) allocator.alloc(init_count * sizeof(u8));
