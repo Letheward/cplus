@@ -108,7 +108,7 @@ int main() {
             for (auto walk = replaced; walk.count;) {
                 
                 auto line   = walk.eat_line();
-                auto first  = line.eat_by_spaces().trim_any_u8(string("[]"));
+                auto first  = line.eat_by_spaces().trim_any(string("[]"));
                 auto arrow  = line.eat_by_spaces();
                 auto number = line.eat_by_spaces();
                 

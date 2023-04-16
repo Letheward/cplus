@@ -42,7 +42,7 @@ int main() {
     auto hello = string("Hello, world! From C+, the tiny standard library.");
 
     for (auto remains = hello; remains.count;) {
-        auto word = remains.eat_by_any_u8_separators(string(" ,.!"));
+        auto word = remains.eat_by_any_separators(string(" ,.!"));
         print(string("[@]\n"), word);
     }
 }

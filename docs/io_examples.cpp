@@ -41,7 +41,7 @@ int main() {
         defer { builder.deinit(); };
 
         for (auto s = file; s.count;) {
-            builder.print(string("@ "), s.eat_by_any_u8_separators(string(" \t\r\n,.;:+-*/=\\<>()[]{}!#%^&'\"")));
+            builder.print(string("@ "), s.eat_by_any_separators(string(" \t\r\n,.;:+-*/=\\<>()[]{}!#%^&'\"")));
         }
 
         builder.append('\n');

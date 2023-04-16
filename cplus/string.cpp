@@ -60,6 +60,37 @@ struct String {
     }
 
 
+
+    /* ---- Basic Utils ---- */
+
+    // sigh...
+    static constexpr u8 spaces_lookup_table[256] = {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    };
+
+    inline void build_lookup_table(u8 table[256]) {
+        for (u64 i = 0; i < count; i++) {
+            table[data[i]] = 1;
+        }
+    }
+
+
+
     /* ---- Match ---- */
     
     bool contains(u8 c) {
@@ -81,13 +112,17 @@ struct String {
         return false;
     }
 
-    bool contains_any(String s) {
+    bool contains_any(const u8 table[256]) {
         for (u64 i = 0; i < count; i++) {
-            for (u64 j = 0; j < s.count; j++) {
-                if (data[i] == s[j]) return true;
-            }
+            if (table[data[i]]) return true;
         }
         return false;
+    }
+
+    bool contains_any(String s) {
+        u8 table[256];
+        s.build_lookup_table(table);
+        return contains_any(table);
     }
 
     bool starts_with(u8 c) {
@@ -161,41 +196,128 @@ struct String {
     }
 
 
+
+
+
+    /* ---- Trim & Eat Utils ---- */
+
+    u64 eat_until(u8 c) {
+        
+        u8* p         = this->data;
+        u64 the_count = this->count;
+        u64 out        = 0;
+       
+        for (u64 i = 0; i < the_count; i++) {
+            if (p[i] != c)  out++;
+            else            break;
+        }
+        
+        this->data  += out;
+        this->count -= out;
+
+        return out;
+    }
+       
+    u64 eat_matches(const u8 table[256]) {
+
+        u8* p         = this->data;
+        u64 the_count = this->count;
+        u64 out       = 0;
+       
+        for (u64 i = 0; i < the_count; i++) {
+            if (table[p[i]])  out++;
+            else              break;
+        }
+        
+        this->data  += out;
+        this->count -= out;
+
+        return out;
+    }
+
+    u64 eat_not_matches(const u8 table[256]) {
+
+        u8* p         = this->data;
+        u64 the_count = this->count;
+        u64 out       = 0;
+       
+        for (u64 i = 0; i < the_count; i++) {
+            if (!table[p[i]]) out++;
+            else              break;
+        }
+        
+        this->data  += out;
+        this->count -= out;
+
+        return out;
+    }
+
+    u64 eat_matches(String s) {
+        u8 table[256] = {};
+        s.build_lookup_table(table);
+        return eat_matches(table);
+    }
+
+    u64 eat_not_matches(String s) {
+        u8 table[256] = {};
+        s.build_lookup_table(table);
+        return eat_not_matches(table);
+    }
+
+
+
     /* ---- Trimming ---- */
 
-    String trim_any_u8_from_start(String match) {
-        for (u64 i = 0; i < count; i++) {
-            if (!match.contains(data[i])) {
-                return advance(i);
-            }
-        }
-        return {};
+    String trim_any_from_start(const u8 table[256]) {
+        auto s = *this;
+        s.eat_matches(table);
+        return s;
     }
 
-    String trim_any_u8_from_end(String match) {
+    String trim_any_from_end(const u8 table[256]) {
         for (u64 i = count; i > 0;) {
             i--;
-            if (!match.contains(data[i])) {
-                return { data, i + 1 };
-            }
+            if (!table[data[i]]) return { data, i + 1 };
         }
         return {};
     }
 
-    String trim_any_u8(String match) {
-        return trim_any_u8_from_start(match).trim_any_u8_from_end(match);
+    String trim_any(const u8 table[256]) {
+        auto s = *this;
+        s.eat_matches(table);
+        return s.trim_any_from_end(table);
     }
 
+    String trim_any_from_start(String match) {
+        u8 table[256] = {};
+        auto s = *this;
+        match.build_lookup_table(table);
+        s.eat_matches(table);
+        return s;
+    }
+     
+    String trim_any_from_end(String match) {
+        u8 table[256] = {};
+        match.build_lookup_table(table);
+        return trim_any_from_end(table);
+    }
+     
+    String trim_any(String match) {
+        u8 table[256] = {};
+        match.build_lookup_table(table);
+        return trim_any(table);
+    }
+    
     String trim_spaces_from_start() {
-        return trim_any_u8_from_start(string(" \t\r\n"));
+        return trim_any_from_start(spaces_lookup_table);
     }
 
     String trim_spaces_from_end() {
-        return trim_any_u8_from_end(string(" \t\r\n"));
+        return trim_any_from_end(spaces_lookup_table);
     }
 
     String trim_spaces() {
-        return trim_any_u8(string(" \t\r\n"));
+        return trim_any(spaces_lookup_table);
     }
 
     Tuple2<String, bool> trim_prefix(String prefix) {
@@ -212,7 +334,71 @@ struct String {
 
 
     /* ---- Lazy Splitting ---- */
+
+    String eat_by_separator(u8 c) {
+        
+        u8* out_data  = this->data;
+        u64 out_count = eat_until(c);
+       
+        if (this->count) {
+            this->data++;
+            this->count--;
+        }
+        
+        if (!count) return {};
+        
+        return { out_data, out_count };
+    }
+
+    String eat_by_any_matches(const u8 table[256]) {
+       
+        eat_not_matches(table);
+        
+        u8* out_data  = this->data;
+        u64 out_count = eat_matches(table);
+        
+        eat_not_matches(table);
+        
+        return { out_data, out_count };
+    }
+
+    String eat_by_any_separators(const u8 table[256]) {
+
+        eat_matches(table);
+        
+        u8* out_data  = this->data;
+        u64 out_count = eat_not_matches(table);
+        
+        eat_matches(table);
+        
+        return { out_data, out_count };
+    }
+     
+    // note: this is slower than table version, but easier to use
+    String eat_by_any_matches(String match) {
+        u8 table[256] = {};
+        match.build_lookup_table(table);
+        return eat_by_any_matches(table);
+    }
+     
+    // note: this is slower than table version, but easier to use
+    String eat_by_any_separators(String separators) {
+        u8 table[256] = {};
+        separators.build_lookup_table(table);
+        return eat_by_any_separators(table);
+    }
+     
+    String eat_by_spaces() {
+        return eat_by_any_separators(spaces_lookup_table);
+    }
     
+    String eat_line() {
+        auto line = eat_by_separator('\n');
+        if (!line.count) return line;
+        if (line.data[line.count - 1] == '\r') line.count--;
+        return line;
+    }
+   
     String eat_by_separator(String separator) {
 
         auto [found, ok] = find(separator);
@@ -251,68 +437,7 @@ struct String {
         return { out_data, out_count };
     }
 
-    String eat_by_any_u8_separators(String separators) {
 
-        *this = trim_any_u8_from_start(separators);
-
-        u64 out_count = 0;
-        while (out_count < this->count) {
-            if (separators.contains(data[out_count])) break;
-            out_count++;
-        }
-
-        String out = { this->data, out_count };
-
-        u64 to_skip = 0;
-        for (u64 i = out_count; i < this->count; i++) {
-            if (separators.contains(data[i])) to_skip++;
-            else break;
-        }
-
-        *this = advance(out_count + to_skip);
-
-        return out;
-    }
-
-    String eat_by_spaces() {
-        return eat_by_any_u8_separators(string(" \t\r\n"));
-    }
-
-    String eat_line_excluding_empty() {
-        return eat_by_any_u8_separators(string("\r\n"));
-    }
-
-    String eat_line() {
-
-        bool found = false;
-
-        u64 i = 0;
-        while (i < this->count) {
-            if (this->data[i] == '\n') {
-                found = true;
-                break;
-            }
-            i++;
-        }
-
-        u8* out_data  = this->data;
-        u64 out_count = i;
-
-        if (!found) {
-            *this = advance(out_count);
-            return { out_data, out_count };
-        }
-
-        u64 to_skip = 1;
-        if (out_count && out_data[out_count - 1] == '\r') {
-            out_count  -= 1;
-            to_skip = 2;
-        }
-
-        *this = advance(out_count + to_skip);
-
-        return { out_data, out_count };
-    }
 
 
     /* ---- Allocating ---- */
@@ -455,8 +580,6 @@ bool operator == (String a, String b) {
 bool memory_equal(String a, String b) {
     return a.count == b.count && a.data == b.data;
 }
-
-
 
 
 

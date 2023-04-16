@@ -103,7 +103,7 @@ String read_line(String buffer) {
     fgets((char*) s.data, (int) s.count, stdin);
     s.count = strlen((const char*) s.data);
     
-    return s.trim_any_u8_from_end(string("\r\n"));
+    return s.trim_any_from_end(string("\r\n"));
 }
 
 
