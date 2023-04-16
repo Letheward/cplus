@@ -1,6 +1,6 @@
 /* ==== Hash Table ==== */
 
-template<typename K, typename V, u32 hash_function(K) = HashFunctions::fnv1a, u64 load_factor = 70>
+template<typename K, typename V, u32 hash_function(K) = HashFunctions::fnv1a, bool compare(K, K) = Operators::equal_to, u64 load_factor = 70>
 struct HashTable {
 
     struct Entry {
@@ -56,7 +56,7 @@ struct HashTable {
             auto it = &entries[i];
             if (!it->occupied) continue;
 
-            auto [index, found, ok] = internal_get_index_and_stats(new_entries, new_size, it->key, it->hash);
+            auto [index, found, ok] = get_index_and_info(new_entries, new_size, it->key, it->hash);
 
             if (!ok) return false;
             if (found) continue;
@@ -79,7 +79,7 @@ struct HashTable {
         }
         
         u32 hash = hash_function(key);
-        auto [index, found, ok] = internal_get_index_and_stats(entries, size, key, hash);
+        auto [index, found, ok] = get_index_and_info(entries, size, key, hash);
         
         if (!ok) return NULL;
 
@@ -96,38 +96,26 @@ struct HashTable {
         return entry;
     }
     
-    Tuple2<u64, bool> get_index(K key) {
-        u32 hash  = hash_function(key);
-        auto [index, found, ok] = internal_get_index_and_stats(entries, size, key, hash);
-        if (!found || !ok) return { 0, false };
-        return { index, true };
-    }
-
     Entry* get_entry(K key) {
-        auto [index, ok] = get_index(key);
-        if (!ok) return NULL;
+
+        u32 hash = hash_function(key);
+        auto [index, found, ok] = get_index_and_info(entries, size, key, hash);
+
+        if (!found || !ok) return NULL;
+       
         return &entries[index];
     }
 
     Tuple2<V, bool> get_value(K key) {
-        auto [index, ok] = get_index(key);
-        if (!ok) return {};
-        return { entries[index].value, true };
+        auto entry = get_entry(key);
+        if (!entry) return {};
+        return { entry->value, true };
     }
 
 
 
 
     /* ---- Iterators ---- */
-
-    template<typename P>
-    inline void for_key_value(P p) {
-        for (u64 i = 0; i < size; i++) {
-            auto entry = &entries[i];
-            if (!entry->occupied) continue;
-            p(entry->key, entry->value);
-        }
-    }
  
     template<typename P>
     inline void for_entry(P p) {
@@ -148,6 +136,15 @@ struct HashTable {
     }
    
     template<typename P>
+    inline void for_key_value(P p) {
+        for (u64 i = 0; i < size; i++) {
+            auto entry = &entries[i];
+            if (!entry->occupied) continue;
+            p(entry->key, entry->value);
+        }
+    }
+    
+    template<typename P>
     inline void for_all(P p) {
         for (u64 i = 0; i < size; i++) {
             auto entry = &entries[i];
@@ -157,7 +154,7 @@ struct HashTable {
 
 private:
     
-    static Tuple3<u64, bool, bool> internal_get_index_and_stats(Entry* entries, u64 size, K key, u32 hash) {
+    static Tuple3<u64, bool, bool> get_index_and_info(Entry* entries, u64 size, K key, u32 hash) {
         
         u64 index = hash & (size - 1);
 
@@ -165,7 +162,7 @@ private:
         while (entries[index].occupied) {
 
             auto entry = &entries[index];
-            if (hash == entry->hash && key == entry->key)  return { index, true, true };
+            if (hash == entry->hash && compare(key, entry->key))  return { index, true, true };
 
             index = (index + probe_count) & (size - 1);
             probe_count++;

@@ -11,7 +11,7 @@ cplus.cpp           includes all the things
 code_generator.cpp  code generation utils, not included by default
 
 core.cpp            basic type definitions  
-utils.cpp           defer, tuple, bit utils, compile time type utils
+utils.cpp           defer, tuple, bit utils, operator wrappers, compile time type utils
 math.cpp            basic math utils
 allocator.cpp       allocator interface and a simple arena allocator
 

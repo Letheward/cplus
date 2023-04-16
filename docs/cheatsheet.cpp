@@ -36,7 +36,7 @@ int main() {
             insertion_sort(a, [] (auto x, auto y) { return x > y; });
             print_array(a);
             
-            quick_sort(a, [] (auto x, auto y) { return x < y; });
+            quick_sort(a, Operators::less_than);
             print_array(a);
 
             printf("%d\n", a.pop());
@@ -141,15 +141,6 @@ int main() {
             if (entry) print(string("\"@\" -> \"@\"\n"), entry->key, entry->value);
         }
        
-        {
-            auto key = string("blue");
-            auto [index, ok] = table.get_index(key);
-            if (ok) {
-                print(string("Found key \"@\" at index "), key);
-                printf("%llu\n", index);
-            }
-        }
-        
         printf("\n");
         
         auto print_table = [&]() {
@@ -168,7 +159,7 @@ int main() {
 
         table.reset();
         table.add(string("hey"));
-
+        table.add(string("man"));
         print_table();
     }
 

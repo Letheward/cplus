@@ -50,6 +50,18 @@ inline T get_mask(T c) {
 
 
 
+/* ==== Operator Wrappers ==== */
+
+namespace Operators {
+    
+    constexpr auto equal_to     = [](auto a, auto b) { return a == b; };
+    constexpr auto less_than    = [](auto a, auto b) { return a <  b; };
+    constexpr auto greater_than = [](auto a, auto b) { return a >  b; };
+}
+
+
+
+
 /* ==== Tuples ==== */
 
 template<typename T0, typename T1>
