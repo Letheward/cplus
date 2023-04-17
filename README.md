@@ -39,7 +39,7 @@ Create a `hello.cpp` file in an empty folder, and put the folder `cplus` there:
 
 int main() {
 
-    auto hello = string("Hello, world! From C+, the tiny standard library.");
+    auto hello = string("Hello, World! From C+, the tiny standard library.");
 
     for (auto remains = hello; remains.count;) {
         auto word = remains.eat_by_any_separators(string(" ,.!"));
@@ -57,7 +57,7 @@ g++ hello.cpp -o hello && ./hello
 It should output something like this:
 ~~~
 [Hello]
-[world]
+[World]
 [From]
 [C+]
 [the]

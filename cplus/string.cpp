@@ -451,7 +451,7 @@ struct String {
     Tuple2<String, bool> copy(Allocator allocator = Allocators::default_heap) {
         auto [out, ok] = alloc(count, allocator);
         if (!ok) return {};
-        for (u64 i = 0; i < count; i++) out.data[i] = data[i]; // todo: speed
+        memcpy(out.data, data, count);
         return { out, ok };
     }
 

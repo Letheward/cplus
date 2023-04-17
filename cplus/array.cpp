@@ -64,7 +64,6 @@ struct Array {
         return true;
     }
 
-
     template<bool ordered = false, typename P>
     void remove_all_matches(P p) {
 
@@ -85,12 +84,20 @@ struct Array {
     }
 
 
+    /* ---- Allocating ---- */
+
     static Tuple2<Array<T>, bool> alloc(u64 count, Allocator allocator = Allocators::default_heap) {
         auto data = (T*) allocator.alloc(count * sizeof(T));
         if (!data) return {};
         return { { data, count }, true };
     }
 
+    Tuple2<Array<T>, bool> copy(Allocator allocator = Allocators::default_heap) {
+        auto [out, ok] = alloc(count, allocator);
+        if (!ok) return {};
+        memcpy(out.data, data, count * sizeof(T));
+        return { out, ok };
+    }
 
 
     /* ---- Iterators ---- */

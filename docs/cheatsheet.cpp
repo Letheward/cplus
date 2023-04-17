@@ -18,102 +18,89 @@ int main() {
             printf("]\n");
         };
        
-        {
-            s32 _a[] = {1, 2, 3, 4, 5};
-            auto a = array(s32, _a);
-            
-            print_array(a);
-            print_array(a.view(1, 3));
-            print_array(a.advance(2));
-
-            a.swap(1, 4);
-            print_array(a);
-
-            auto [index, found] = a.find(3);
-            if (found) a.remove(index);
-            print_array(a);
-                
-            insertion_sort(a, [] (auto x, auto y) { return x > y; });
-            print_array(a);
-            
-            quick_sort(a, Operators::less_than);
-            print_array(a);
-
-            printf("%d\n", a.pop());
-            printf("%d\n", a.pop());
-            print_array(a);
-
-            DynamicArray<s32> k;
-            k.init_from_array(a);
-            defer { k.deinit(); };
-
-            print_array(k);
-            
-            printf("\n");
-        }
+        s32 data[] = {1, 2, 3, 4, 5, 6, 7};
+        auto a = array(s32, data);
         
-        {
-            DynamicArray<s32> a;
-            a.init();
-            defer { a.deinit(); };
-           
-            for (s32 i = 0; i < 10; i++)  a.add(i);
-            print_array(a);
-            
-            a.reset();
-            a.reserve(64);
-            a.add(3);
-            a.add(42);
-            print_array(a);
-            
-            printf("a: [%llu / %llu]\n", a.count, a.allocated);
-        }
+        print_array(a);
+        print_array(a.view(1, 3));
+        print_array(a.advance(4));
+
+        a.swap(1, 4);
+        print_array(a);
+
+        auto [index, found] = a.find(3);
+        if (found) a.remove(index);
+        print_array(a);
+
+        insertion_sort(a, [] (auto x, auto y) { return x > y; });
+        print_array(a);
+        
+        a.remove_all_matches<true>([](auto it) { return it % 2 != 0; });
+        print_array(a);
+        
+        quick_sort(a, Operators::less_than);
+        print_array(a);
+
+        printf("%d\n", a.pop());
+        printf("%d\n", a.pop());
+        print_array(a);
+
+        DynamicArray<s32> k;
+        k.init_from_array(a);
+        defer { k.deinit(); };
+
+        print_array(k);
+        
+        for (s32 i = 0; i < 6; i++)  k.add(i);
+        print_array(k);
+        
+        k.reset();
+        k.reserve(64);
+        k.add(3);
+        k.add(42);
+        print_array(k);
+        
+        printf("a: [%llu / %llu]\n", k.count, k.allocated);
     }
 
     
     printf("\n\n==== String & StringBuilder ====\n\n");
     {
-        {
-            auto s = string("Hello");
-            print(string("\"@\"\n"), s);
+        auto s = string("Hello");
+        print(string("\"@\"\n"), s);
+    
+        StringBuilder builder;
+        builder.init_from_string(s);
+        defer { builder.deinit(); };
         
-            StringBuilder builder;
-            builder.init_from_string(s);
-            defer { builder.deinit(); };
-            
-            builder.append(string(" world!"));
-            print(string("\"@\"\n"), builder);
+        builder.append(string(" world!"));
+        print(string("\"@\"\n"), builder);
 
-            printf("StringBuilder: [%llu / %llu]\n\n", builder.count, builder.allocated);
+        printf("StringBuilder: [%llu / %llu]\n\n", builder.count, builder.allocated);
+
+        builder.reset();
+
+        for (auto walk = string("foo bar baz biz"); walk.count;) {
+            auto word = walk.eat_by_spaces();
+            if (word.starts_with('b')) {
+                builder.print(string("[@]: "), word);
+                builder.print("%llu\n", word.count);
+            }
         }
-       
-        {
-            StringBuilder builder;
-            builder.init();
-            defer { builder.deinit(); };
 
-            for (auto walk = string("foo bar baz biz"); walk.count;) {
-                auto word = walk.eat_by_spaces();
-                if (word.starts_with('b')) {
-                    builder.print(string("[@]: "), word);
-                    builder.print("%llu\n", word.count);
-                }
-            }
+        print_string(builder);
 
-            print_string(builder);
+        auto [replaced, _] = builder.replace(string(": "), string(" -> "));
+        defer { free(replaced.data); };
 
-            auto [replaced, _] = builder.replace(string(": "), string(" -> "));
-            defer { free(replaced.data); };
-
-            for (auto walk = replaced; walk.count;) {
-                
-                auto line   = walk.eat_line();
-                auto first  = line.eat_by_spaces().trim_any(string("[]"));
-                auto arrow  = line.eat_by_spaces();
-                auto number = line.eat_by_spaces();
-                
-                print(string("@ @ @\n"), first, arrow, number);
-            }
+        for (auto walk = replaced; walk.count;) {
+            
+            auto line   = walk.eat_line();
+            auto first  = line.eat_by_spaces().trim_any(string("[]"));
+            auto arrow  = line.eat_by_spaces();
+            auto number = line.eat_by_spaces();
+            
+            print(string("@ @ @\n"), first, arrow, number);
         }
     }
 
@@ -166,7 +153,7 @@ int main() {
 
     printf("\n\n==== Queue ====\n\n");
     {
-        s32 data[8] = {0};
+        s32 data[8] = {};
         auto queue = queue(s32, data);
         
         for (u64 i = 0; i < 10; i++) {
