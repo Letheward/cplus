@@ -22,7 +22,7 @@ struct HashTable {
         allocator = init_alloc;
         init_size = round_to_next_power_of_2(init_size);
         
-        auto p = (Entry*) allocator.alloc(init_size * sizeof(Entry));
+        auto p = (Entry*) allocator.alloc_and_clear(init_size * sizeof(Entry));
         if (!p) return false;
 
         this->entries     = p; 
@@ -47,10 +47,9 @@ struct HashTable {
         u64 new_size = size * 2;
         if (new_size < size) return false; // handle overflow
 
-        auto new_entries = (Entry*) allocator.alloc(new_size * sizeof(Entry));
+        auto new_entries = (Entry*) allocator.alloc_and_clear(new_size * sizeof(Entry)); 
         if (!new_entries) return false;
 
-        // re-slot all old entries. todo: is this slow?
         for (u64 i = 0; i < size; i++) {
 
             auto it = &entries[i];
@@ -121,8 +120,7 @@ struct HashTable {
     inline void for_entry(P p) {
         for (u64 i = 0; i < size; i++) {
             auto entry = &entries[i];
-            if (!entry->occupied) continue;
-            p(entry);
+            if (entry->occupied) p(entry);
         }
     }
 
@@ -130,8 +128,7 @@ struct HashTable {
     inline void for_entry_with_index(P p) {
         for (u64 i = 0; i < size; i++) {
             auto entry = &entries[i];
-            if (!entry->occupied) continue;
-            p(entry, i);
+            if (entry->occupied) p(entry, i);
         }
     }
    
@@ -139,8 +136,7 @@ struct HashTable {
     inline void for_key_value(P p) {
         for (u64 i = 0; i < size; i++) {
             auto entry = &entries[i];
-            if (!entry->occupied) continue;
-            p(entry->key, entry->value);
+            if (entry->occupied) p(entry->key, entry->value);
         }
     }
     

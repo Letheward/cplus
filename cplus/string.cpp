@@ -443,7 +443,7 @@ struct String {
     /* ---- Allocating ---- */
 
     static Tuple2<String, bool> alloc(u64 count, Allocator allocator = Allocators::default_heap) {
-        u8* data = (u8*) allocator.alloc(count * sizeof(u8));
+        u8* data = (u8*) allocator.alloc_and_clear(count * sizeof(u8));
         if (!data) return {};
         return { { data, count }, true };
     }
@@ -642,7 +642,7 @@ struct StringBuilder : String {
         if (!p) return false;
 
         this->data = p;
-        allocated = new_size;
+        allocated  = new_size;
 
         return true;
     }
@@ -650,8 +650,8 @@ struct StringBuilder : String {
     u64 append(String s) {
 
         u64 wanted = this->count + s.count;
-        while (wanted > allocated) {
-            auto ok = reserve(allocated * 2);
+        if (wanted > allocated) {
+            auto ok = reserve(round_to_next_power_of_2(wanted));
             if (!ok) return 0;
         }
 

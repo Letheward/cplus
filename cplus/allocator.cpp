@@ -2,6 +2,7 @@ struct Allocator {
 
     enum Mode : u8 {
         ALLOC,
+        ALLOC_AND_CLEAR,
         RESIZE,
         FREE,
         RESET,
@@ -14,6 +15,10 @@ struct Allocator {
 
     inline void* alloc(u64 size) {
         return proc(data, NULL, size, Mode::ALLOC);
+    }
+
+    inline void* alloc_and_clear(u64 size) {
+        return proc(data, NULL, size, Mode::ALLOC_AND_CLEAR);
     }
 
     inline void* resize(void* old, u64 size) {
@@ -96,15 +101,21 @@ void* arena_alloc(MemoryArena* a, u64 count) {
     return a->data + current;
 }
 
-// note: unsafe (can only resize a pointer when no other objects are allocated after that), use with caution
-void* arena_resize(MemoryArena* a, void* old, u64 size) {
+void* arena_alloc_and_clear(MemoryArena* a, u64 count) {
+    auto p = arena_alloc(a, count);
+    memset(p, 0, count);
+    return p;
+}
+
+// note: can only resize a pointer when no other objects are allocated after that, use with caution
+void* arena_unsafe_resize(MemoryArena* a, void* old, u64 size) {
     
     u64 pos      = (u64) old - (u64) a->data;
     u64 wanted   = pos + size;
     
     assert(wanted < a->size);
     
-    if (wanted > a->highest) a->highest = wanted; // check the highest here, maybe slow?
+    if (wanted > a->highest) a->highest = wanted;
     a->allocated = wanted;
 
     return old;
@@ -117,9 +128,7 @@ void arena_free_size(MemoryArena* a, u64 size) {
 
 void arena_reset(MemoryArena* a) {
     a->allocated = 0;
-    memset(a->data, 0, a->highest); // do we need this?
 }
-
 
 
 
@@ -131,10 +140,11 @@ void* default_heap_allocator_procedure(void* data, void* old, u64 size, Allocato
     using Mode = Allocator::Mode;
     
     switch (mode) {
-        case Mode::ALLOC:  return calloc(size, sizeof(u8)); break;
-        case Mode::RESIZE: return realloc(old, size);       break;
-        case Mode::FREE:   free(old);                       break;
-        case Mode::RESET:                                   break;
+        case Mode::ALLOC:            return malloc(size * sizeof(u8)); break;
+        case Mode::ALLOC_AND_CLEAR:  return calloc(size,  sizeof(u8)); break;
+        case Mode::RESIZE:           return realloc(old, size);        break;
+        case Mode::FREE:             free(old);                        break;
+        case Mode::RESET:                                              break;
     }
     
     return NULL;
@@ -146,10 +156,11 @@ void* arena_allocator_procedure(void* data, void* old, u64 size, Allocator::Mode
     using Mode = Allocator::Mode;
     
     switch (mode) {
-        case Mode::ALLOC:  return arena_alloc(p, size);       break;
-        case Mode::RESIZE: return arena_resize(p, old, size); break; // note: unsafe
-        case Mode::FREE:   break;
-        case Mode::RESET:  arena_reset(p);
+        case Mode::ALLOC:            return arena_alloc(p, size);              break;
+        case Mode::ALLOC_AND_CLEAR:  return arena_alloc_and_clear(p, size);    break;
+        case Mode::RESIZE:           return arena_unsafe_resize(p, old, size); break; 
+        case Mode::FREE:                                                       break;
+        case Mode::RESET:            arena_reset(p);                           break;
     }
     
     return NULL;

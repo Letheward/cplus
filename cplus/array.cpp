@@ -87,7 +87,7 @@ struct Array {
     /* ---- Allocating ---- */
 
     static Tuple2<Array<T>, bool> alloc(u64 count, Allocator allocator = Allocators::default_heap) {
-        auto data = (T*) allocator.alloc(count * sizeof(T));
+        auto data = (T*) allocator.alloc_and_clear(count * sizeof(T));
         if (!data) return {};
         return { { data, count }, true };
     }
