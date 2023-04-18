@@ -597,30 +597,26 @@ struct StringBuilder : String {
 
         allocator = init_alloc;
 
-        auto p = (u8*) allocator.alloc(init_count * sizeof(u8));
+        auto to_alloc = round_to_next_power_of_2(init_count);
+        
+        auto p = (u8*) allocator.alloc(to_alloc);
         if (!p) return false;
 
         this->data  = p;
         this->count = 0;
-        allocated   = init_count;
+        allocated   = to_alloc;
 
         return true;
     }
 
     bool init_from_string(String in, Allocator init_alloc = Allocators::default_heap) {
     
-        allocator = init_alloc;
-        
-        auto to_alloc = round_to_next_power_of_2(in.count);
-        
-        auto p = (u8*) allocator.alloc(to_alloc);
-        if (!p) return false;
+        auto ok = init(in.count, init_alloc);
+        if (!ok) return false;
 
-        memcpy(p, in.data, in.count);
+        memcpy(this->data, in.data, in.count);
         
-        this->data  = p;
         this->count = in.count;
-        allocated   = to_alloc;
 
         return true;
     }

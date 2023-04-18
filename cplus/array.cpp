@@ -167,7 +167,9 @@ struct DynamicArray : Array<T> {
 
         allocator = init_alloc;
 
-        auto p = (T*) allocator.alloc(init_count * sizeof(T));
+        auto to_alloc = round_to_next_power_of_2(init_count) * sizeof(T);
+        
+        auto p = (T*) allocator.alloc(to_alloc);
         if (!p) return false;
 
         this->data  = p;
@@ -179,18 +181,11 @@ struct DynamicArray : Array<T> {
 
     bool init_from_array(Array<T> in, Allocator init_alloc = Allocators::default_heap) {
     
-        allocator = init_alloc;
-        
-        auto to_alloc = round_to_next_power_of_2(in.count * sizeof(T));
-        
-        auto p = (T*) allocator.alloc(to_alloc);
-        if (!p) return false;
+        auto ok = init(in.count, init_alloc);
+        if (!ok) return false;
 
-        memcpy(p, in.data, to_alloc);
-        
-        this->data  = p;
+        memcpy(this->data, in.data, in.count * sizeof(T));
         this->count = in.count;
-        allocated   = to_alloc;
 
         return true;
     }
