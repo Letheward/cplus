@@ -65,7 +65,7 @@ void generate_code(const char* start, Array<GenericType> generic_types, Array<co
 
 int main() {
 
-    if (1) {
+    if (0) {
          
         GenericType a[] = {
             { "std::vector",        1 },
