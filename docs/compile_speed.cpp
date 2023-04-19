@@ -33,11 +33,25 @@ int main() {
 
 int main() {
 
+    // we want a fair comparison, so we need to do "constructors" and "destructors" manually 
+    
     DynamicArray<u32> a;
     Queue<u32> q;
     List<u32> l;
     StringBuilder b;
     HashTable<String, String> t;
+    
+    a.init();
+    q.init();
+    l.init();
+    b.init();
+    t.init();
+    
+    a.deinit();
+    q.deinit();
+    l.deinit();
+    b.deinit();
+    t.deinit();
 
     printf("Hello, World!\n");
 }

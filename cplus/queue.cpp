@@ -14,8 +14,8 @@ struct Queue {
     
     void init(u64 init_size = 32) {
         *this = {};
-        this->data  = (T*) calloc(init_size, sizeof(T));
-        this->count = init_size;
+        data = (T*) calloc(init_size, sizeof(T));
+        size = init_size;
     }
 
     void deinit() {
