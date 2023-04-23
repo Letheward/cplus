@@ -79,8 +79,6 @@ Tuple2<u64, bool> parse_u64(String s) {
     if (!s.count) return {};
 
     u64 result = 0;
-    u64 digit_count = 0;
-
     for (u64 i = 0; i < s.count; i++) {
         
         u8 c = s[i];
@@ -91,11 +89,10 @@ Tuple2<u64, bool> parse_u64(String s) {
             if (c < '0' || c > '9') return {};
         }
         
-        result *= 10;
-        result += c - '0';
+        u64 next = result * 10 + (c - '0');
+        if (next < result) return {}; // overflow
         
-        digit_count++;
-        if (digit_count > 20) return {}; // todo: not handling all overflows
+        result = next;
     }
     
     return { result, true };
@@ -180,7 +177,10 @@ Tuple2<s64, bool> parse_s64(String s) {
     auto [result, ok] = parse_u64(s.advance(start));
     if (!ok) return {};
     
-    return { sign * (s64) result, true };
+    s64 signed_result = (s64) result;
+    if (signed_result < 0) return {}; // check overflow, overflow to 0 is handled by parse_u64()
+    
+    return { sign * signed_result, true };
 }
 
 // todo: validate
