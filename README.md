@@ -13,6 +13,7 @@ code_generator.cpp  code generation utils, not included by default
 core.cpp            basic type definitions  
 utils.cpp           defer, tuple, bit utils, operator wrappers, compile time type utils
 math.cpp            basic math utils
+random.cpp          random number generator interface and some basic PRNGs
 allocator.cpp       allocator interface and a simple arena allocator
 
 array.cpp           array view and dynamic array
@@ -82,7 +83,7 @@ I don't recommend using this in production, but if you want to do some prototypi
 ## Notes
 
 - Currently, C+ does not support multiple compilation units, so you can only do unity build.
-- I don't use exceptions at all. If you also don't, you can use the flag `-fno-exceptions` or similiar compiler switches.
+- I don't use exceptions or virtual at all. If you also don't, you can use the flags `-fno-exceptions` and `-fno-rtti`, or similiar compiler switches.
 
 ## Dependencies
 

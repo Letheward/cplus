@@ -169,8 +169,6 @@ void* arena_allocator_procedure(void* data, void* old, u64 size, Allocator::Mode
 namespace Allocators {
 
     constexpr Allocator default_heap = { default_heap_allocator_procedure, NULL };
-
-
 };
 
 

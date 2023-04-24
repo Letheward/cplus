@@ -13,6 +13,7 @@ namespace CPLUS_NAMESPACE {
 #include "core.cpp"
 #include "utils.cpp"
 #include "math.cpp"
+#include "random.cpp"
 #include "allocator.cpp"
 
 #include "array.cpp"
