@@ -171,4 +171,3 @@ namespace Allocators {
     constexpr Allocator default_heap = { default_heap_allocator_procedure, NULL };
 };
 
-

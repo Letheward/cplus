@@ -604,7 +604,7 @@ struct StringBuilder : String {
 
         this->data  = p;
         this->count = 0;
-        allocated   = to_alloc;
+        allocated   = init_count;
 
         return true;
     }
