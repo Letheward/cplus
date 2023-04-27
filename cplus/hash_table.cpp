@@ -17,6 +17,8 @@ struct HashTable {
 
     bool init(u64 init_size = 256, Allocator init_alloc = Allocators::default_heap) {
         
+        assert(init_size != 0);
+
         *this = {};
 
         allocator = init_alloc;
@@ -42,7 +44,7 @@ struct HashTable {
         entry_count = 0;
     }
     
-    bool resize() {
+    bool expand() {
 
         u64 new_size = size * 2;
         if (new_size < size) return false; // handle overflow
@@ -73,7 +75,7 @@ struct HashTable {
     Entry* add(K key, V value = {}) {
 
         if ((entry_count + 1) * 100 > size * load_factor) {
-            auto ok = resize();
+            auto ok = expand();
             if (!ok) return NULL;
         }
         
