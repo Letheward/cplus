@@ -16,13 +16,12 @@ int main() {
 
     printf("\n\n==== Read Input ====\n\n");
     {
-        auto [buffer, _] = String::alloc(1024);
-        defer { free(buffer.data); };
+        u8 buffer[1024] = {};
 
         while (1) {
             
             printf("> ");
-            auto line = read_line(buffer);
+            auto line = read_line(array_string(buffer));
             if (line == string("quit")) break;
             
             for (auto s = line; s.count;) {

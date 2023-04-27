@@ -23,7 +23,7 @@ int main() {
         auto command = line.eat_by_spaces();
         
         if (command == string("help")) {
-        
+
             puts( 
 R"end(
 How to use:

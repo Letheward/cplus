@@ -593,13 +593,13 @@ struct StringBuilder : String {
 
     bool init(u64 init_count = 1024, Allocator init_alloc = Allocators::default_heap) {
 
+        assert(init_count != 0);
+
         *this = {};
 
         allocator = init_alloc;
-
-        auto to_alloc = round_to_next_power_of_2(init_count);
         
-        auto p = (u8*) allocator.alloc(to_alloc);
+        auto p = (u8*) allocator.alloc(init_count);
         if (!p) return false;
 
         this->data  = p;
@@ -610,12 +610,13 @@ struct StringBuilder : String {
     }
 
     bool init_from_string(String in, Allocator init_alloc = Allocators::default_heap) {
-    
-        auto ok = init(in.count, init_alloc);
+
+        if (!in.count) return init(1024, init_alloc);
+        
+        auto ok = init(round_to_next_power_of_2(in.count), init_alloc); // because the reason you make it dynamic is to append stuff 
         if (!ok) return false;
 
         memcpy(this->data, in.data, in.count);
-        
         this->count = in.count;
 
         return true;
@@ -651,10 +652,7 @@ struct StringBuilder : String {
             if (!ok) return 0;
         }
 
-        for (u64 i = 0; i < s.count; i++) {
-            this->data[this->count + i] = s[i];
-        }
-
+        memcpy(this->data + this->count, s.data, s.count);
         this->count = wanted;
 
         return s.count;
