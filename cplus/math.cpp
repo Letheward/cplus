@@ -21,7 +21,7 @@ namespace Math {
     
     template<typename T>
     T abs(T x) {
-        return x < 0 ? -x : x;
+        return x < T {} ? -x : x;
     }
 
     template<typename T>
