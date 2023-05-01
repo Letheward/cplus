@@ -1,9 +1,9 @@
 struct RandomNumberGenerator {
     
-    using Proc = u64 (void*);
+    using Procedure = u64 (void*);
     
-    Proc* proc;
-    void* data;
+    Procedure* proc;
+    void*      data;
 
     inline u64 get_u64() {
         return proc(data);

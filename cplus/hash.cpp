@@ -21,22 +21,6 @@ namespace HashFunctions {
         return hash;
     }
 
-    // todo: is this broken? collision count is way too high
-    u32 pjw(String s) {
-
-        u32 hash = 0;
-
-        for (u64 i = 0; i < s.count; i++) {
-
-            hash = (hash << 4) + s[i];
-
-            u32 test = hash & 0xf0000000;
-            if (test)  hash = (hash ^ (test >> 24)) & ~0xf0000000;
-        }
-
-        return hash;
-    }
-
 
 
     /* ==== Generate Code ==== */
@@ -49,7 +33,6 @@ namespace HashFunctions {
 
     get(fnv1a)
     get(djb2)
-    get(pjw)
 
     #undef get
 }
