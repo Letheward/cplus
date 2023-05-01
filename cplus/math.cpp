@@ -17,68 +17,71 @@ namespace Numbers {
 
 /* ==== Basic Math Utils ==== */
 
-template<typename T>
-T abs(T x) {
-    return x < 0 ? -x : x;
-}
-
-template<typename T>
-T min(T a, T b) {
-    return a < b ? a : b;
-}
-
-template<typename T>
-T max(T a, T b) {
-    return a > b ? a : b;
-}
-
-template<typename T>
-T clamp(T x, T low, T high) {
-    if (x < low ) return low;
-    if (x > high) return high;
-    return x;
-}
-
-template<typename T, typename F>
-T lerp(T a, T b, F t) {
-    static_assert(type_is_float<F>());
-    return a + (b - a) * t;
-}
-
-template<typename T>
-T mod(T x, T m) {
-    return ((x % m) + m) % m;
-}
-
-template<typename T>
-T gcd(T a, T b) {
-
-    static_assert(type_is_unsigned_integer<T>());
+namespace Math {
     
-    while (b) {
-        T t = b;
-        b = a % b;
-        a = t;
+    template<typename T>
+    T abs(T x) {
+        return x < 0 ? -x : x;
     }
 
-    return a;
-}
+    template<typename T>
+    T min(T a, T b) {
+        return a < b ? a : b;
+    }
 
-template<typename T>
-T lcm(T a, T b) {
-    return a * b / gcd(a, b);
-}
+    template<typename T>
+    T max(T a, T b) {
+        return a > b ? a : b;
+    }
 
-template<typename T>
-Tuple2<T, T> div_mod(T a, T b) {
-    static_assert(type_is_unsigned_integer<T>());
-    return { a / b, a % b };
-}
+    template<typename T>
+    T clamp(T x, T low, T high) {
+        if (x < low ) return low;
+        if (x > high) return high;
+        return x;
+    }
 
-template<typename T>
-T rounded_div(T a, T b) {
-    auto [out, left] = div_mod(a, b);
-    return out + (left * 2 > b);
+    template<typename T, typename F>
+    T lerp(T a, T b, F t) {
+        static_assert(type_is_float<F>());
+        return a + (b - a) * t;
+    }
+
+    template<typename T>
+    T mod(T x, T m) {
+        return ((x % m) + m) % m;
+    }
+
+    template<typename T>
+    T gcd(T a, T b) {
+
+        static_assert(type_is_unsigned_integer<T>());
+        
+        while (b) {
+            T t = b;
+            b = a % b;
+            a = t;
+        }
+
+        return a;
+    }
+
+    template<typename T>
+    T lcm(T a, T b) {
+        return a * b / gcd(a, b);
+    }
+
+    template<typename T>
+    Tuple2<T, T> div_mod(T a, T b) {
+        static_assert(type_is_unsigned_integer<T>());
+        return { a / b, a % b };
+    }
+
+    template<typename T>
+    T rounded_div(T a, T b) {
+        auto [out, left] = div_mod(a, b);
+        return out + (left * 2 > b);
+    }
 }
 
 
