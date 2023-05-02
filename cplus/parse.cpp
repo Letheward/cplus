@@ -110,52 +110,50 @@ Tuple2<s64, bool> parse_s64(String s) {
 }
 
 // todo: validate
-// todo: precision and handling overflow
+// todo: precision and handle overflow
 Tuple2<f64, bool> parse_f64(String s) {
     
     if (!s.count) return {};
 
-    u64 start = 0;
- 
-    f64 sign = 1;
-    switch (s[start]) {
-        case '-': sign = -1; // fall-through
-        case '+': start++;
-        default:  break;
-    }
-    
-    u64 dot_pos = start;
-    while (dot_pos < s.count) {
-        if (s[dot_pos] == '.') break;
-        dot_pos++;
-    }
-    
     f64 result = 0;
-    for (u64 i = start; i < dot_pos; i++) {
+    f64 sign   = 1;
+    u64 i      = 0;
+    
+    switch (s[0]) {
+        case '-': sign = -1; // fallthrough
+        case '+': i    = 1;
+    }
+    
+    if (i == s.count) return {}; 
+    if (s[i] == '_')  return {}; 
+   
+    if (s[i] == '.' && i + 1 == s.count) return {};
+    
+    for (; i < s.count; i++) {
         
         u8 c = s[i];
-        if (c == '_') {
-            if (i != start) continue;
-            else            return {};
-        } else if (c < '0' || c > '9') {
-            return {};
-        }
-        
-        result *= 10.0;
-        result += c - '0';
-    }
+        if (c == '_')           continue;
+        if (c < '0' || c > '9') break;
 
-    f64 denom = 10;
-    for (u64 i = dot_pos + 1; i < s.count; i++) {
+        result *= 10.0;
+        result += (f64) (c - '0');
+    }
+    
+    if (i < s.count && s[i] != '.') return {};
+    i++;
+
+    f64 denom = 1;
+    for (; i < s.count; i++) {
         
         u8 c = s[i];
         if (c == '_')           continue;
         if (c < '0' || c > '9') return {};
         
-        result += (f64) (c - '0') / denom;
+        result *= 10.0;
+        result += (f64) (c - '0');
         denom  *= 10;
     }
     
-    return { sign * result, true };
+    return { result * sign / denom, true };
 }
 
