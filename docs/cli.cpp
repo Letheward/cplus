@@ -40,6 +40,9 @@ How to use:
     get <key>
         Get value base on key.
 
+    filter <length>
+        filter by the string length of key
+
     list
         List all key value pairs.
 )end"
@@ -68,9 +71,24 @@ How to use:
                 print(string("\"@\" -> \"@\"\n"), k, v);
             });
         
+        } else if (command == string("filter")) {
+
+            auto s = line.eat_by_spaces();
+            auto [count, ok] = parse_u64(s);
+            if (!ok) {
+                print(string("\"@\" is not a valid length number!\n"), s);
+                continue;
+            }
+            
+            table.for_key_value([&](auto k, auto v) {
+                if (k.count == count) {
+                    print(string("\"@\" -> \"@\"\n"), k, v);
+                }
+            });
+
         } else {
             
-            print(string("Error: Unknown command \"@\". Type \"help\" to list all commands.\n"), command);
+            print(string("Unknown command \"@\". Type \"help\" to list all commands.\n"), command);
         }
     }
 
