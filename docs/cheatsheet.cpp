@@ -145,8 +145,8 @@ int main() {
         print_table();
 
         table.reset();
-        table.add(string("hey"));
-        table.add(string("man"));
+        table.add_key(string("hey"));
+        table.add_key(string("man"));
         print_table();
     }
 

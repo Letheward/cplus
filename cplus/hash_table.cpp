@@ -72,7 +72,7 @@ struct HashTable {
         return true;
     }
 
-    Entry* add(K key, V value = {}) {
+    Entry* add(K key, V value) {
 
         if ((entry_count + 1) * 100 > size * load_factor) {
             auto ok = expand();
@@ -96,7 +96,29 @@ struct HashTable {
 
         return entry;
     }
-    
+ 
+    Tuple2<Entry*, bool> add_key(K key) {
+
+        if ((entry_count + 1) * 100 > size * load_factor) {
+            auto ok = expand();
+            if (!ok) return {};
+        }
+        
+        u32 hash = hash_function(key);
+        auto [index, found, ok] = get_index_and_info(entries, size, key, hash);
+        
+        if (!ok) return {};
+
+        auto entry = &entries[index];
+        
+        if (found) return { entry, true };
+
+        *entry = { key, {}, hash, 1 };
+        entry_count++;
+
+        return { entry, false };
+    }
+   
     Entry* get_entry(K key) {
 
         u32 hash = hash_function(key);
