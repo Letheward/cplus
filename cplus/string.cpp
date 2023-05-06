@@ -734,51 +734,34 @@ struct InplaceString {
     inline u8 operator [] (u64 index) {
         return data[index];
     }
-    
+   
+    static InplaceString<size> from_string(String s) {
+
+        assert(s.count < size);
+        
+        InplaceString<size> out;
+        out.count = (u8) s.count;
+        
+        memcpy(out.data, s.data, s.count);
+        
+        return out;
+    }
+     
     inline String to_string() {
         return { data, count };
     }
-    
+  
     template<u64 new_size>
     inline InplaceString<new_size> resize() {
         
-        static_assert(check_size<new_size>());
-        
-        if constexpr (new_size < size) assert(count + 1 < new_size);
+        if constexpr (new_size < size) assert(((u64) count + 1) < new_size);
         
         auto out = *(InplaceString<new_size>*) this;
         out.count = count;
         
         return out;
     }
-    
-private:
-    
-    template<u64 the_size>
-    constexpr bool check_size() {
-        return (
-            (the_size >= 4 && the_size <= 256) && 
-            (the_size % 2 == 0)                && 
-            (sizeof(InplaceString<the_size>) == the_size)
-        );
-    }
-    
-    static_assert(check_size<size>());
+   
+    static_assert((size >= 4 && size <= 256) && (size % 2 == 0));
 };
-
-template<u64 size>
-InplaceString<size> string_to_inplace_string(String s) {
-
-    static_assert(sizeof(InplaceString<size>) == size);
-    assert(s.count < size);
-    
-    InplaceString<size> out;
-    out.count = (u8) s.count;
-    
-    for (u64 i = 0; i < s.count; i++) {
-        out.data[i] = s[i];
-    }
-    
-    return out;
-}
 
