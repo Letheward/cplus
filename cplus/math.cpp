@@ -55,10 +55,15 @@ namespace Math {
     template<typename T>
     T gcd(T a, T b) {
 
-        static_assert(type_is_unsigned_integer<T>());
+        if constexpr (type_is_signed_integer<T>()) {
+            a = abs(a);
+            b = abs(b);
+        } else {
+            static_assert(type_is_unsigned_integer<T>());
+        }
         
         while (b) {
-            T t = b;
+            auto t = b;
             b = a % b;
             a = t;
         }
@@ -68,7 +73,16 @@ namespace Math {
 
     template<typename T>
     T lcm(T a, T b) {
-        return a * b / gcd(a, b);
+        
+        auto p = a * b;
+        
+        if constexpr (type_is_signed_integer<T>()) {
+            p = abs(p);
+        } else {
+            static_assert(type_is_unsigned_integer<T>());
+        }
+        
+        return p / gcd(a, b);
     }
 
     template<typename T>
