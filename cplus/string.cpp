@@ -688,7 +688,7 @@ struct StringBuilder : String {
 
         va_end(args);
 
-        return old_count - count;
+        return count - old_count;
     }
    
     u64 print(const char* s, ...) {
