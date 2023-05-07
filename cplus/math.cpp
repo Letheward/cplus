@@ -74,15 +74,18 @@ namespace Math {
     template<typename T>
     T lcm(T a, T b) {
         
-        auto p = a * b;
-        
+        T d;
+
         if constexpr (type_is_signed_integer<T>()) {
-            p = abs(p);
+            a = abs(a);
+            b = abs(b);
+            d = (T) gcd((u64) a, (u64) b); // avoid abs() in gcd()
         } else {
             static_assert(type_is_unsigned_integer<T>());
+            d = gcd(a, b);
         }
         
-        return p / gcd(a, b);
+        return a * (b / d); 
     }
 
     template<typename T>
