@@ -72,20 +72,21 @@ namespace Math {
     }
 
     template<typename T>
-    T lcm(T a, T b) {
+    u64 lcm(T a, T b) {
         
-        T d;
+        u64 la;
+        u64 lb;
 
         if constexpr (type_is_signed_integer<T>()) {
-            a = abs(a);
-            b = abs(b);
-            d = (T) gcd((u64) a, (u64) b); // avoid abs() in gcd()
+            la = (u64) abs(a);
+            lb = (u64) abs(b);
         } else {
             static_assert(type_is_unsigned_integer<T>());
-            d = gcd(a, b);
+            la = (u64) a;
+            lb = (u64) b;
         }
         
-        return a * (b / d); 
+        return la * (lb / gcd(la, lb)); 
     }
 
     template<typename T>
