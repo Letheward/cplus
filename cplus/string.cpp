@@ -314,13 +314,13 @@ struct String {
     String trim_prefix(String prefix) {
         u8 ok = starts_with(prefix);
         if (!ok) return *this;
-        return { advance(prefix.count), true };
+        return advance(prefix.count);
     }
 
     String trim_suffix(String suffix) {
         u8 ok = ends_with(suffix);
         if (!ok) return *this;
-        return { view(0, count - suffix.count), true };
+        return view(0, count - suffix.count);
     }
 
 
