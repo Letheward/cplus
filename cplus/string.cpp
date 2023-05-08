@@ -203,51 +203,42 @@ struct String {
 
     u64 eat_until(u8 c) {
         
-        u8* p         = this->data;
-        u64 the_count = this->count;
-        u64 out        = 0;
-       
-        for (u64 i = 0; i < the_count; i++) {
-            if (p[i] != c)  out++;
-            else            break;
+        u64 out = 0;
+        for (u64 i = 0; i < count; i++) {
+            if (data[i] != c) out++;
+            else              break;
         }
         
-        this->data  += out;
-        this->count -= out;
+        data  += out;
+        count -= out;
 
         return out;
     }
        
     u64 eat_matches(const u8 table[256]) {
 
-        u8* p         = this->data;
-        u64 the_count = this->count;
-        u64 out       = 0;
-       
-        for (u64 i = 0; i < the_count; i++) {
-            if (table[p[i]])  out++;
-            else              break;
+        u64 out = 0;
+        for (u64 i = 0; i < count; i++) {
+            if (table[data[i]]) out++;
+            else                break;
         }
         
-        this->data  += out;
-        this->count -= out;
+        data  += out;
+        count -= out;
 
         return out;
     }
 
     u64 eat_not_matches(const u8 table[256]) {
 
-        u8* p         = this->data;
-        u64 the_count = this->count;
-        u64 out       = 0;
-       
-        for (u64 i = 0; i < the_count; i++) {
-            if (!table[p[i]]) out++;
-            else              break;
+        u64 out = 0;
+        for (u64 i = 0; i < count; i++) {
+            if (!table[data[i]]) out++;
+            else                 break;
         }
         
-        this->data  += out;
-        this->count -= out;
+        data  += out;
+        count -= out;
 
         return out;
     }
@@ -337,15 +328,15 @@ struct String {
 
     String eat_by_separator(u8 c) {
         
-        u8* out_data  = this->data;
+        u8* out_data  = data;
         u64 out_count = eat_until(c);
        
-        if (this->count) {
-            this->data++;
-            this->count--;
+        if (count) {
+            data++;
+            count--;
         }
         
-        if (!count) return {};
+        if (!out_count) return {};
         
         return { out_data, out_count };
     }
@@ -354,7 +345,7 @@ struct String {
        
         eat_not_matches(table);
         
-        u8* out_data  = this->data;
+        u8* out_data  = data;
         u64 out_count = eat_matches(table);
         
         eat_not_matches(table);
@@ -366,7 +357,7 @@ struct String {
 
         eat_matches(table);
         
-        u8* out_data  = this->data;
+        u8* out_data  = data;
         u64 out_count = eat_not_matches(table);
         
         eat_matches(table);
@@ -428,7 +419,7 @@ struct String {
                 return out;
             }
 
-            out_data  = this->data;
+            out_data  = data;
             out_count = found.data - data;
 
             *this = advance(out_count + separator.count);
