@@ -23,9 +23,9 @@ struct Array {
         return data[0];
     }
     
-    inline T last() {
-        assert(count);
-        return data[count - 1];
+    inline T last(u64 i = 0) {
+        assert(i < count);
+        return data[count - 1 - i];
     }
 
     inline Array<T> view(u64 start, u64 end) {
