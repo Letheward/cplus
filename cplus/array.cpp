@@ -18,6 +18,16 @@ struct Array {
         return data[index];
     }
 
+    inline T first() {
+        assert(count);
+        return data[0];
+    }
+    
+    inline T last() {
+        assert(count);
+        return data[count - 1];
+    }
+
     inline Array<T> view(u64 start, u64 end) {
         return { data + start, end - start };
     }
@@ -26,11 +36,10 @@ struct Array {
         return { data + pos, count - pos };
     }
 
-    inline void swap(u64 a_index, u64 b_index) {
-        auto a = data[a_index];
-        auto b = data[b_index];
-        data[a_index] = b;
-        data[b_index] = a;
+    inline void swap(u64 a, u64 b) {
+        auto t  = data[a];
+        data[a] = data[b];
+        data[b] = t;
     }
 
     T pop() {
