@@ -568,6 +568,10 @@ bool operator == (String a, String b) {
     return true;
 }
 
+bool operator != (String a, String b) {
+    return !(a == b);
+}
+
 bool memory_equal(String a, String b) {
     return a.count == b.count && a.data == b.data;
 }
