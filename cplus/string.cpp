@@ -551,6 +551,20 @@ struct String {
         return p;
     }
 
+    static s32 compare(String a, String b) {
+        
+        auto min = Math::min(a.count, b.count);
+
+        for (u64 i = 0; i < min; i++) {
+            auto x = a[i];
+            auto y = b[i];
+            if (x < y) return -1;
+            if (x > y) return  1;
+        }
+        
+        return 0;
+    }
+
 private:
     // note: unsafe
     static inline void append_buffer(u8* data, u64* acc, String s) {
