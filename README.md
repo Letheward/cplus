@@ -19,7 +19,7 @@ allocator.cpp       allocator interface and a simple arena allocator
 array.cpp           array view and dynamic array
 queue.cpp           fixed size queue
 list.cpp            doubly linked list with a fixed size pool
-sort.cpp            basic sorting algorithms
+algorithms.cpp      basic useful algorithms (sorting, binary search)
 
 string.cpp          string view, string builder, inplace string
 parse.cpp           basic string parsing utils

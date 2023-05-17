@@ -57,6 +57,8 @@ namespace Operators {
     constexpr auto equal_to     = [](auto a, auto b) { return a == b; };
     constexpr auto less_than    = [](auto a, auto b) { return a <  b; };
     constexpr auto greater_than = [](auto a, auto b) { return a >  b; };
+    
+    constexpr auto minus        = [](auto a, auto b) { return a -  b; };
 }
 
 

@@ -19,7 +19,7 @@ namespace CPLUS_NAMESPACE {
 #include "array.cpp"
 #include "queue.cpp"
 #include "list.cpp"
-#include "sort.cpp"
+#include "algorithms.cpp"
 
 #include "string.cpp"
 #include "parse.cpp"
