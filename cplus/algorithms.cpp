@@ -48,12 +48,55 @@ void quick_sort(Array<T> in, C compare) {
 }
 
 
+template<typename T, typename C>
+void heap_sort(Array<T> in, C compare) {
+
+    auto sift_down = [&](u64 root, u64 end) {
+
+        while (2 * root + 1 <= end) {
+
+            u64 child = 2 * root + 1;
+            u64 swap  = root;
+
+            if (compare(in[child], in[swap])) {
+                swap = child;
+            }
+            
+            if (child + 1 <= end && compare(in[child + 1], in[swap])) {
+                swap = child + 1;
+            }
+            
+            if (swap == root) break;
+
+            in.swap(root, swap);
+            root = swap;
+        }
+    };
+
+    if (in.count < 2) return;
+    
+    u64 start = (in.count - 2) / 2 + 1;
+    u64 end   = in.count - 1;
+    
+    while (start > 0) {
+        start--;
+        sift_down(start, end);
+    }
+
+    while (end > 0) {
+        in.swap(end, 0);
+        end--;
+        sift_down(0, end);
+    }
+}
+
+
 
 
 /* ==== Binary Search ==== */
 
 template<typename T, typename C>
-T* binary_search(Array<T> in, T key, C c) {
+T* binary_search(Array<T> in, T key, C compare) {
 
     auto base  = in.data;
     auto count = in.count;
@@ -62,7 +105,7 @@ T* binary_search(Array<T> in, T key, C c) {
         
         auto test = &base[count / 2];
 
-        s32 sign = c(key, *test);
+        s32 sign = compare(key, *test);
 
         if (sign < 0) {
             count /= 2;
@@ -78,20 +121,20 @@ T* binary_search(Array<T> in, T key, C c) {
 }
 
 template<typename T, typename C>
-Array<T> binary_search_range(Array<T> in, T key, C c) {
+Array<T> binary_search_range(Array<T> in, T key, C compare) {
         
-    auto start = binary_search(in, key, c);
+    auto start = binary_search(in, key, compare);
     if (!start) return {};
     
     u64 count = 1;
     
     while (start + count < in.data + in.count) {
-        if (c(key, start[count]) != 0) break;
+        if (compare(key, start[count]) != 0) break;
         count++; 
     }
 
     while (start > in.data) {
-        if (c(key, *(start - 1)) != 0) break;
+        if (compare(key, *(start - 1)) != 0) break;
         start--; 
         count++;
     }
