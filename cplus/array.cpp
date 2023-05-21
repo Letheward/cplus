@@ -22,7 +22,7 @@ struct Array {
         assert(count);
         return data[0];
     }
-    
+
     inline T last(u64 i = 0) {
         assert(i < count);
         return data[count - 1 - i];
@@ -48,14 +48,14 @@ struct Array {
         count--;
         return out;
     }
-    
+
     Tuple2<u64, bool> find(T item) {
         for (u64 i = 0; i < count; i++) {
             if (data[i] == item) return { i, true };
         }
         return { 0, false };
     }
-    
+
     // note: unordered
     bool remove(u64 index) {
         if (!count) return false;
@@ -63,7 +63,7 @@ struct Array {
         count--;
         return true;
     }
-    
+
     bool remove_ordered(u64 index) {
         if (!count) return false;
         for (u64 i = index; i < count - 1; i++) {
@@ -77,9 +77,9 @@ struct Array {
     void remove_all_matches(P p) {
 
         for (u64 i = 0; i < count; i++) {
-            
+
             while (i < count) {
-                
+
                 if (p(data[i])) {
 
                     if constexpr (ordered) remove_ordered(i); // todo: n^2
@@ -112,50 +112,50 @@ struct Array {
     /* ---- Iterators ---- */
 
     /*
-        Note: 
-        I'm still not sure that I like this, but this is much readable, understandable, sane, 
-        and (ironically) much more powerful, than writing weird data holders, 
+        Note:
+        I'm still not sure that I like this, but this is much readable, understandable, sane,
+        and (ironically) much more powerful, than writing weird data holders,
         hardcoded begin(), end(), and a bunch of crazy operator overloads.
 
-        If you want to write the raw iteration yourself for any reason, the code here is 
+        If you want to write the raw iteration yourself for any reason, the code here is
         actually the example code of how you do it.
 
         Downsides:
-        - You can't use break/continue, although you can achieve the same thing with early return, return values, etc. 
+        - You can't use break/continue, although you can achieve the same thing with early return, return values, etc.
         - This may have some performance cost due to the lambda.
 
         Same thing for other data structures.
     */
-   
+
     template<bool reverse = false, typename P>
     inline void for_each(P p) {
-        
+
         if constexpr (!reverse) {
-            
+
             for (u64 i = 0; i < count; i++) {
                 p(data[i]);
             }
-        
+
         } else {
-            
+
             for (u64 i = count; i > 0;) {
                 i--;
                 p(data[i]);
             }
         }
     }
-        
+
     template<bool reverse = false, typename P>
     inline void for_each_with_index(P p) {
-            
+
         if constexpr (!reverse) {
-            
+
             for (u64 i = 0; i < count; i++) {
                 p(data[i], i);
             }
 
         } else {
-            
+
             for (u64 i = count; i > 0;) {
                 i--;
                 p(data[i], i);
@@ -192,7 +192,7 @@ struct DynamicArray : Array<T> {
 
         if (!in.count) return init(32, init_alloc);
 
-        auto ok = init(round_to_next_power_of_2(in.count), init_alloc); // because the reason you make it dynamic is to add things 
+        auto ok = init(round_to_next_power_of_2(in.count), init_alloc); // because the reason you make it dynamic is to add things
         if (!ok) return false;
 
         memcpy(this->data, in.data, in.count * sizeof(T));

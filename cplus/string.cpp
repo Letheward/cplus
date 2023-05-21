@@ -36,7 +36,7 @@ struct String {
 
 
     /* ---- Core ---- */
-    
+
     inline u8 operator [] (u64 index) {
         return data[index];
     }
@@ -92,7 +92,7 @@ struct String {
 
 
     /* ---- Match ---- */
-    
+
     bool contains(u8 c) {
         for (u64 i = 0; i < count; i++) {
             if (data[i] == c) return true;
@@ -202,19 +202,19 @@ struct String {
     /* ---- Trim & Eat Utils ---- */
 
     u64 eat_until(u8 c) {
-        
+
         u64 out = 0;
         for (u64 i = 0; i < count; i++) {
             if (data[i] != c) out++;
             else              break;
         }
-        
+
         data  += out;
         count -= out;
 
         return out;
     }
-       
+
     u64 eat_matches(const u8 table[256]) {
 
         u64 out = 0;
@@ -222,7 +222,7 @@ struct String {
             if (table[data[i]]) out++;
             else                break;
         }
-        
+
         data  += out;
         count -= out;
 
@@ -236,7 +236,7 @@ struct String {
             if (!table[data[i]]) out++;
             else                 break;
         }
-        
+
         data  += out;
         count -= out;
 
@@ -286,19 +286,19 @@ struct String {
         s.eat_matches(table);
         return s;
     }
-     
+
     String trim_any_from_end(String match) {
         u8 table[256] = {};
         match.build_lookup_table(table);
         return trim_any_from_end(table);
     }
-     
+
     String trim_any(String match) {
         u8 table[256] = {};
         match.build_lookup_table(table);
         return trim_any(table);
     }
-    
+
     String trim_spaces_from_start() {
         return trim_any_from_start(spaces_lookup_table);
     }
@@ -327,69 +327,69 @@ struct String {
     /* ---- Lazy Splitting ---- */
 
     String eat_by_separator(u8 c) {
-        
+
         u8* out_data  = data;
         u64 out_count = eat_until(c);
-       
+
         if (count) {
             data++;
             count--;
         }
-        
+
         if (!out_count) return {};
-        
+
         return { out_data, out_count };
     }
 
     String eat_by_any_matches(const u8 table[256]) {
-       
+
         eat_not_matches(table);
-        
+
         u8* out_data  = data;
         u64 out_count = eat_matches(table);
-        
+
         eat_not_matches(table);
-        
+
         return { out_data, out_count };
     }
 
     String eat_by_any_separators(const u8 table[256]) {
 
         eat_matches(table);
-        
+
         u8* out_data  = data;
         u64 out_count = eat_not_matches(table);
-        
+
         eat_matches(table);
-        
+
         return { out_data, out_count };
     }
-     
+
     // note: this is slower than table version, but easier to use
     String eat_by_any_matches(String match) {
         u8 table[256] = {};
         match.build_lookup_table(table);
         return eat_by_any_matches(table);
     }
-     
+
     // note: this is slower than table version, but easier to use
     String eat_by_any_separators(String separators) {
         u8 table[256] = {};
         separators.build_lookup_table(table);
         return eat_by_any_separators(table);
     }
-     
+
     String eat_by_spaces() {
         return eat_by_any_separators(spaces_lookup_table);
     }
-    
+
     String eat_line() {
         auto line = eat_by_separator('\n');
         if (!line.count) return line;
         if (line.data[line.count - 1] == '\r') line.count--;
         return line;
     }
-   
+
     String eat_by_separator(String separator) {
 
         auto [found, ok] = find(separator);
@@ -541,18 +541,22 @@ struct String {
     }
 
     char* to_c_string(Allocator allocator = Allocators::default_heap) {
-        
+
         auto p = (char*) allocator.alloc(count + 1);
         if (!p) return NULL;
 
         p[count] = '\0';
         memcpy(p, data, count);
-        
+
         return p;
     }
 
+    inline Array<u8> to_array() {
+        return { data, count };
+    }
+
     static s32 compare(String a, String b) {
-        
+
         auto min = Math::min(a.count, b.count);
 
         for (u64 i = 0; i < min; i++) {
@@ -561,7 +565,7 @@ struct String {
             if (x < y) return -1;
             if (x > y) return  1;
         }
-        
+
         return 0;
     }
 
@@ -607,7 +611,7 @@ struct StringBuilder : String {
         *this = {};
 
         allocator = init_alloc;
-        
+
         auto p = (u8*) allocator.alloc(init_count);
         if (!p) return false;
 
@@ -621,8 +625,8 @@ struct StringBuilder : String {
     bool init_from_string(String in, Allocator init_alloc = Allocators::default_heap) {
 
         if (!in.count) return init(1024, init_alloc);
-        
-        auto ok = init(round_to_next_power_of_2(in.count), init_alloc); // because the reason you make it dynamic is to append stuff 
+
+        auto ok = init(round_to_next_power_of_2(in.count), init_alloc); // because the reason you make it dynamic is to append stuff
         if (!ok) return false;
 
         memcpy(this->data, in.data, in.count);
@@ -641,7 +645,7 @@ struct StringBuilder : String {
     }
 
     bool reserve(u64 new_size) {
-        
+
         if (new_size <= allocated) return false;
 
         auto p = (u8*) allocator.resize(this->data, new_size);
@@ -675,10 +679,10 @@ struct StringBuilder : String {
     u64 print(String s, ...) {
 
         u64 old_count = count;
-        
+
         va_list args;
         va_start(args, s);
-        
+
         for (u64 i = 0; i < s.count; i++) {
 
             u8 c = s[i];
@@ -699,7 +703,7 @@ struct StringBuilder : String {
 
         return count - old_count;
     }
-   
+
     u64 print(const char* s, ...) {
 
         va_list va, va2;
@@ -736,41 +740,41 @@ struct StringBuilder : String {
 
 template<u64 size>
 struct InplaceString {
-    
+
     u8 data[size - 1];
     u8 count;
-    
+
     inline u8 operator [] (u64 index) {
         return data[index];
     }
-   
+
     static InplaceString<size> from_string(String s) {
 
         assert(s.count < size);
-        
+
         InplaceString<size> out;
         out.count = (u8) s.count;
-        
+
         memcpy(out.data, s.data, s.count);
-        
+
         return out;
     }
-     
+
     inline String to_string() {
         return { data, count };
     }
-  
+
     template<u64 new_size>
     inline InplaceString<new_size> resize() {
-        
+
         if constexpr (new_size < size) assert(((u64) count + 1) < new_size);
-        
+
         auto out = *(InplaceString<new_size>*) this;
         out.count = count;
-        
+
         return out;
     }
-   
+
     static_assert((size >= 4 && size <= 256) && (size % 2 == 0));
 };
 
