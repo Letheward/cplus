@@ -9,8 +9,8 @@ int main() {
     
     u64 random_state = (u64) time(0);
     
-    Allocator             temp   = { arena_allocator_procedure,   &arena };
-    RandomNumberGenerator random = { RandomNumberGenerators::lcg, &random_state };
+    Allocator temp   = { arena_allocator_procedure,   &arena };
+    Random    random = { RandomNumberGenerators::lcg, &random_state };
     
     auto random_word = [&](u64 count) -> String {
         

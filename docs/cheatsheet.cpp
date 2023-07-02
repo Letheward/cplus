@@ -35,7 +35,7 @@ int main() {
         insertion_sort(a, [] (auto x, auto y) { return x > y; });
         print_array(a);
         
-        a.remove_all_matches<true>([](auto it) { return it % 2 != 0; });
+        a.remove_matches<true>([](auto it) { return it % 2 != 0; });
         print_array(a);
         
         quick_sort(a, Operators::less_than);
@@ -46,7 +46,7 @@ int main() {
         print_array(a);
 
         DynamicArray<s32> k;
-        k.init_from_array(a);
+        k.init_from(a);
         defer { k.deinit(); };
 
         print_array(k);
@@ -70,7 +70,7 @@ int main() {
         print(string("\"@\"\n"), s);
     
         StringBuilder builder;
-        builder.init_from_string(s);
+        builder.init_from(s);
         defer { builder.deinit(); };
         
         builder.append(string(" world!"));

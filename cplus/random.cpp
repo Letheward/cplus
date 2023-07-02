@@ -1,4 +1,4 @@
-struct RandomNumberGenerator {
+struct Random {
     
     using Procedure = u64 (void*);
     

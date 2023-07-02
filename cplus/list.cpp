@@ -224,7 +224,7 @@ struct List {
     
     
     template<typename P>
-    void remove_all_matches(P p) {
+    void remove_matches(P p) {
     
         for (auto it = start; it; it = it->next) {
             

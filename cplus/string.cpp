@@ -622,7 +622,7 @@ struct StringBuilder : String {
         return true;
     }
 
-    bool init_from_string(String in, Allocator init_alloc = Allocators::default_heap) {
+    bool init_from(String in, Allocator init_alloc = Allocators::default_heap) {
 
         if (!in.count) return init(1024, init_alloc);
 

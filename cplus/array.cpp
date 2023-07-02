@@ -56,35 +56,33 @@ struct Array {
         return { 0, false };
     }
 
-    // note: unordered
+    template<bool ordered = false>
     bool remove(u64 index) {
+        
         if (!count) return false;
-        swap(index, count - 1);
-        count--;
-        return true;
-    }
-
-    bool remove_ordered(u64 index) {
-        if (!count) return false;
-        for (u64 i = index; i < count - 1; i++) {
-            swap(i, i + 1);
+        
+        if constexpr(ordered) {
+            for (u64 i = index; i < count - 1; i++) {
+                data[i] = data[i + 1];
+            }
+        } else {
+            data[index] = data[count - 1];
         }
+        
         count--;
+        
         return true;
     }
 
     template<bool ordered = false, typename P>
-    void remove_all_matches(P p) {
+    void remove_matches(P p) {
 
         for (u64 i = 0; i < count; i++) {
 
             while (i < count) {
 
                 if (p(data[i])) {
-
-                    if constexpr (ordered) remove_ordered(i); // todo: n^2
-                    else                   remove(i);
-
+                    remove<ordered>(i); // todo: n^2 in ordered case
                 } else {
                     break;
                 }
@@ -188,7 +186,7 @@ struct DynamicArray : Array<T> {
         return true;
     }
 
-    bool init_from_array(Array<T> in, Allocator init_alloc = Allocators::default_heap) {
+    bool init_from(Array<T> in, Allocator init_alloc = Allocators::default_heap) {
 
         if (!in.count) return init(32, init_alloc);
 
