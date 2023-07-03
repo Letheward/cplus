@@ -134,7 +134,7 @@ int main() {
             
             printf("Table [%llu / %llu]\n", table.entry_count, table.size);
             
-            table.for_entry_with_index([](auto entry, auto index) {
+            table.for_entry<true>([](auto entry, auto index) {
                 printf("[%.4llu] [%.8x] | ", index, entry->hash);
                 print(string("\"@\" -> \"@\"\n"), entry->key, entry->value);
             });
@@ -191,7 +191,7 @@ int main() {
         };
 
         auto print_list_reverse = [&]() {
-            list.for_value<true>([](auto value) {
+            list.for_value<false, true>([](auto value) {
                 print(string("\"@\" -> "), value); 
             });
             printf("null\n");

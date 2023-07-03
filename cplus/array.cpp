@@ -124,39 +124,23 @@ struct Array {
 
         Same thing for other data structures.
     */
-
-    template<bool reverse = false, typename P>
+   
+    template<bool with_index = false, bool reverse = false, typename P>
     inline void for_each(P p) {
 
         if constexpr (!reverse) {
 
             for (u64 i = 0; i < count; i++) {
-                p(data[i]);
+                if constexpr (with_index) p(data[i], i);
+                else                      p(data[i]);
             }
 
         } else {
 
             for (u64 i = count; i > 0;) {
                 i--;
-                p(data[i]);
-            }
-        }
-    }
-
-    template<bool reverse = false, typename P>
-    inline void for_each_with_index(P p) {
-
-        if constexpr (!reverse) {
-
-            for (u64 i = 0; i < count; i++) {
-                p(data[i], i);
-            }
-
-        } else {
-
-            for (u64 i = count; i > 0;) {
-                i--;
-                p(data[i], i);
+                if constexpr (with_index) p(data[i], i);
+                else                      p(data[i]);
             }
         }
     }

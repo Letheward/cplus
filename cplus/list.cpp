@@ -247,61 +247,47 @@ struct List {
 
     /* ---- Iterators ---- */
     
-    template<bool reverse = false, typename P>
+    template<bool with_index = false, bool reverse = false, typename P>
     inline void for_value(P p) {
-        if constexpr (!reverse) {
-            for (auto it = start; it; it = it->next)  p(it->value);
-        } else {
-            for (auto it = end;   it; it = it->prev)  p(it->value);
-        }
-    }
-    
-    template<bool reverse = false, typename P>
-    inline void for_value_with_index(P p) {
-   
-        u64 index = 0;
 
-        if constexpr (!reverse) {
-            
-            for (auto it = start; it; it = it->next) {
-                p(it->value, index);
-                index++;
-            }
-        
-        } else {
-            
-            for (auto it = end; it; it = it->prev) {
-                p(it->value, index);
-                index++;
-            }
-        }
-    }
-    
-    template<bool reverse = false, typename P>
-    inline void for_node(P p) {
-        if constexpr (!reverse) {
-            for (auto it = start; it; it = it->next)  p(it);
-        } else {
-            for (auto it = end;   it; it = it->prev)  p(it);
-        }
-    }
-    
-    template<bool reverse = false, typename P>
-    inline void for_node_with_index(P p) {
-        
         u64 index = 0;
         
         if constexpr (!reverse) {
             
             for (auto it = start; it; it = it->next) {
-                p(it, index);
+                if constexpr (with_index) p(it->value, index);
+                else                      p(it->value);
                 index++;
             }
         
         } else {
             
-            for (auto it = end; it; it = it->prev) {
-                p(it);
+            for (auto it = end;   it; it = it->prev) {
+                if constexpr (with_index) p(it->value, index);
+                else                      p(it->value);
+                index++;
+            }
+        }
+    }
+   
+    template<bool with_index = false, bool reverse = false, typename P>
+    inline void for_node(P p) {
+
+        u64 index = 0;
+        
+        if constexpr (!reverse) {
+            
+            for (auto it = start; it; it = it->next) {
+                if constexpr (with_index) p(it, index);
+                else                      p(it);
+                index++;
+            }
+        
+        } else {
+            
+            for (auto it = end;   it; it = it->prev) {
+                if constexpr (with_index) p(it, index);
+                else                      p(it);
                 index++;
             }
         }

@@ -140,22 +140,17 @@ struct HashTable {
 
     /* ---- Iterators ---- */
  
-    template<typename P>
+    template<bool with_index = false, typename P>
     inline void for_entry(P p) {
         for (u64 i = 0; i < size; i++) {
             auto entry = &entries[i];
-            if (entry->occupied) p(entry);
+            if (entry->occupied) {
+                if constexpr (with_index) p(entry, i);
+                else                      p(entry);
+            }
         }
     }
-
-    template<typename P>
-    inline void for_entry_with_index(P p) {
-        for (u64 i = 0; i < size; i++) {
-            auto entry = &entries[i];
-            if (entry->occupied) p(entry, i);
-        }
-    }
-   
+  
     template<typename P>
     inline void for_key_value(P p) {
         for (u64 i = 0; i < size; i++) {
